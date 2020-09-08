@@ -1,31 +1,56 @@
 ﻿import React from "react";
 import './App.css';
+import crypto from  "crypto";
 
 class  FileArea extends React.Component {
   render() {
     return (
-      <span>
-        <span>
-          <select class="dropdown" name="operation" onChange={this.handleOperationChange.bind(this)}>
+      <div>
+        <p className="App-file-area">
+          <select className="dropdown" name="operation">
           <option value="確認"> 確認 </option>
-          <option value="承認"> 承認 </option>
+          <option value="署名"> 署名 </option>
           </select> : &nbsp;
           <input type="file" onChange={this.handleFileChange.bind(this)} />
-        </span><br/><br/>
-        <span className="App-small-text">
-        「ファイルの選択」ボタンを押してファイルを選ぶか、
-        ファイルをボタンの上にドラッグ＆ドロップしてください。
-        </span>
-      </span>
+        </p>
+        <p className="App-hash-value">
+          {this.getFileHashView()}&nbsp;
+        </p>
+      </div>
     );
   }
 
-  handleFileChange(ev) {
-    const  files = ev.target.files
-    console.log(files)
+  constructor() {
+    super();
+    this.state = {fileHash: ""};
+    this.reader = new FileReader();
+    this.hashFunction = "SHA256";
   }
 
-  handleOperationChange(ev) {
+  handleFileChange(ev) {
+    const  selectedFile = ev.target.files[0];
+
+    this.readAsArrayBuffer(selectedFile, () => {
+      const  selectedFileContents = this.reader.result;
+      const  hashCalculator = crypto.createHash( this.hashFunction );
+      hashCalculator.update(new Buffer( selectedFileContents ));
+      const  hashValue = hashCalculator.digest("hex");
+
+      this.setState({fileHash: hashValue});
+    });
+  }
+
+  readAsArrayBuffer(file, callbackFunction) {
+    this.reader.addEventListener('load', callbackFunction);
+    this.reader.readAsArrayBuffer(file);
+  }
+
+  getFileHashView() {
+    if (this.state.fileHash === "") {
+      return  "";
+    } else {
+      return  this.hashFunction +" ハッシュ値：" + this.state.fileHash;
+    }
   }
 }
 export default FileArea;
