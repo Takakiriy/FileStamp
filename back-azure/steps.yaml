@@ -2,6 +2,7 @@
 
 参考:
     - https://github.com/Takakiriy/Trials/tree/master/try_Azure_functions_cs
+    - https://github.com/Takakiriy/Trials/tree/master/try_Azure_CosmosDB
     - https://docs.microsoft.com/ja-jp/azure/azure-functions/functions-create-first-function-vs-code
 
 設定:

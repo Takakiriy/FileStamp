@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-stamp-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-stamp-front
+  template:
+    metadata:
+      labels:
+        app: file-stamp-front
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: file-stamp-front
+        image: sagep.azurecr.io/file-stamp-front:0.0.1
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-stamp-front
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 3000
+  selector:
+    app: file-stamp-front

@@ -1,0 +1,15 @@
+version: "2"
+services:
+  node:
+    image: file-stamp-front
+    build:
+      context: .
+    tty: true
+    stdin_open: true
+    privileged: true
+    #command: bash -c "cd /app-react;  yarn start"
+    #command: bash -c "bash /usr/local/bin/docker-entrypoint.sh;  /bin/bash"
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "80:80"
