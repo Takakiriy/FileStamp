@@ -5,9 +5,11 @@ set commands=
 set commands=%commands%  cd  $(cygpath --unix '%~d0%~p0');
 set commands=%commands%  export PATH=$(cygpath --unix '%~d0%~p0')node_modules/.bin:${PATH};
 
-set commands=%commands%  echo 'rm -rf node_modules';
-set commands=%commands%  rm -rf node_modules;
+set commands=%commands%  echo 'Restore node_modules';
+set commands=%commands%  npm ci;
 set commands=%commands%  echo 'rm -rf build';
 set commands=%commands%  rm -rf build;
+set commands=%commands%  echo 'npm run build';
+set commands=%commands%  npm run build;
 
-start "no-title" "C:\Program Files\Git\git-bash.exe"  -c "%commands%"
+start "no-title" "C:\Program Files\Git\git-bash.exe"  -c "%commands%  exec bash"

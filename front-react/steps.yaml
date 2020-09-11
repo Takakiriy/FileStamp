@@ -12,20 +12,43 @@ app-react アプリケーションをローカルで編集するには:
 リポジトリに入れないファイルを削除するには:
     - run_clean.bat をダブルクリックします
 
-React のサンプル アプリケーションの Docker イメージをビルドして、ローカル Web サーバーのコンテナーを起動します:
+React アプリケーションの Web サーバーの Docker イメージをビルドして、ローカルで動作確認をします:
+    - Node_js/run_install_Node_js.bat をダブルクリックします
+    - run_build.bat をダブルクリックします  #// build フォルダーが作られます
     - Docker が起動するまで待ちます
     - docker-compose up --build
+    - ブラウザーで localhost を表示します
 
 ローカル Web サーバーを終了して、ローカルのコンテナーを削除します:
     - docker-compose down
 
-Azure ACR に Docker イメージを登録する:
+React アプリケーションの Web サーバーの Docker イメージ Minikube 環境で動作確認をします:
+    - Node_js/run_install_Node_js.bat をダブルクリックします
+    - run_build.bat をダブルクリックします  #// build フォルダーが作られます
+    - 管理者の PowerShell を開く
+    - cd  "front-react"
+    - minikube start
+    - minikube docker-env --shell powershell | Invoke-Expression
+    - docker build  -t sagep.azurecr.io/file-stamp-front:0.0.2  .
+    - kubectl apply -f  "docker-k8s.yaml"
+    - kubectl get pods --output=wide
+    - kubectl describe pods
+    - minikube service  file-stamp-front  #// ブラウザーが開いて React アプリケーションが表示されます
+    - kubectl delete -f  "docker-k8s.yaml"
+    - kubectl get pods
+    - minikube stop
+    - Windows の通知領域にある Docker アイコンを右クリック [ Kubernetes >> docker-desktop ]
+
+Azure の ACR に Docker イメージを登録する:
     設定:
         __ResourceGroupName__: sage-p-acr-1
         __RepositoryName__: sagep
         __ImageName__: file-stamp-front
-        __Tag__: 0.0.1
+        __Tag__: 0.0.2
         __RepositoryHost__: sagep.azurecr.io
+
+    Docker イメージをビルドする:
+        - docker build  -t sagep.azurecr.io/file-stamp-front:0.0.2  .
 
     Azure にログインする:
         - az login [--tenant __TenantID__]
@@ -34,20 +57,16 @@ Azure ACR に Docker イメージを登録する:
         - az acr list --resource-group "sage-p-acr-1" --query "[].{acrLoginServer:loginServer}" \
             --output table
 
-    Docker イメージにタグを付けます:
-        - docker tag  "file-stamp-front"  "sagep.azurecr.io/file-stamp-front:0.0.1"
-
     ACR インスタンスにログインします:
         - az acr login  --name "sagep"
 
     Docker イメージをレジストリ（ACR インスタンス）にプッシュ（登録）します。 簡単なサンプルでも 5分かかります。:
-        - docker push  "sagep.azurecr.io/file-stamp-front:0.0.1"
+        - docker push  "sagep.azurecr.io/file-stamp-front:0.0.2"
 
     登録されたことを確認します:
         - az acr repository show-tags  --name "sagep"  --repository "file-stamp-front"
-        #// az acr repository list  --name "sagep"
 
-クラスター:
+Azure の AKS にデプロイする:
     設定:
         __ResourceGroupName__: sage-p-file-stamp
         __ClusterName__: FileStamp  #// Kubernetes サービス名
@@ -55,5 +74,11 @@ Azure ACR に Docker イメージを登録する:
         __RepositoryName__: sagep
         __NodeCount__: 1
 
-デプロイする:
-    - kubectl apply -f  "docker-k8s.yaml"
+    接続する:
+        - az aks get-credentials  --resource-group "sage-p-file-stamp"  --name "FileStamp"
+        - kubectl get nodes  #// NAME = aks-nodepool... であることをチェック
+    デプロイする:
+        - kubectl apply -f  "docker-k8s.yaml"
+        - kubectl get pods --output=wide
+
+	URL はまだ DNS を取っていないため、CORS の設定を参照。
