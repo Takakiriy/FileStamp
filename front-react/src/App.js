@@ -2,25 +2,27 @@
 import stamp from './stamp.svg';
 import './App.css';
 import FileArea from './FileArea';
-import axiosBase from 'axios';
+import UserSetting from './UserSetting';
+import REST_API from './REST_API';
 
 class  App extends React.Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
+        <div className="header-menu" onClick={this.handleUserSetting.bind(this)}>ユーザー情報</div>
+        <br/>
+        <div className="main">
           <img src={stamp} className="App-logo" alt="logo" />
           <br/><br/>
-          <p>
-            <React.StrictMode>
-              <FileArea />
-            </React.StrictMode>
-          </p>
+          <FileArea
+            signerMailAddress={this.state.userMailAddress}/>
           <p>
             <input type="button" onClick={this.handleButton.bind(this)} value="HTTP GET"/><br/>
             {this.state.html}
           </p>
-          <br/>
+        </div>
+        <br/><br/>
+        <div className="footer">
           <p className="App-small-text">
             「ファイルの選択」ボタンを押してファイルを選ぶか、
             ファイルをボタンの上にドラッグ＆ドロップしてください。
@@ -30,36 +32,41 @@ class  App extends React.Component {
             「署名」は、ファイルの内容を本人が確認したことを証明する電子署名をサーバーに記録します。
           </p>
           <p>
-            Simple File Stamp version 0.01
+            Simple File Stamp version 0.02
           </p>
-        </header>
+        </div>
+        <UserSetting
+          visible={this.state.userSettingVisible}
+          onClosing={this.handleUserSettingClosing.bind(this)}
+          mailAddress={this.state.userMailAddress}/>
       </div>
     );
   }
 
   constructor() {
     super();
-    this.state = {html: ""};
-    this.axios = axiosBase.create({
-      baseURL: 'https://sagep-function-cs.azurewebsites.net',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      responseType: 'json'  
-    });
+    this.state = {
+      html: "",
+      userSettingVisible: false,
+      userMailAddress: "taro-suzuki@example.com",
+    };
   }
 
-  handleButton() {
-    this.axios.get('/api/HttpTriggerCSharp1')
-    .then( (response) => {
-      console.log(response);
-      this.setState({html: response.data});
-    })
-    .catch( (err) => {
-      console.log(err);
-      this.setState({html: "Error"});
-    })
+  handleUserSetting() {
+    this.setState({userSettingVisible: true});
+  }
+
+  handleUserSettingClosing() {
+    this.setState({userSettingVisible: false});
+  }
+
+  async handleButton() {
+    const result = await REST_API.getTest().catch( (err) => {
+      this.setState({html: String(err)});
+    });
+    if (result) {
+      this.setState({html: result});
+    }
   }
 }
 

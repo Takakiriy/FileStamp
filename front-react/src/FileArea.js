@@ -1,34 +1,41 @@
 ﻿import React from "react";
 import './App.css';
+import ConfirmationToSign from './ConfirmationToSign';
 import crypto from  "crypto";
 
 class  FileArea extends React.Component {
   render() {
     return (
-      <div>
+      <span>
         <p className="App-file-area">
-          <select className="dropdown" name="operation">
-          <option value="確認"> 確認 </option>
-          <option value="署名"> 署名 </option>
-          </select> : &nbsp;
           <input type="file" onChange={this.handleFileChange.bind(this)} />
+          &nbsp;
+          <button onClick={this.handleSign.bind(this)} >署名する</button>
         </p>
         <p className="App-hash-value">
           {this.getFileHashView()}&nbsp;
         </p>
-      </div>
+        <ConfirmationToSign
+          visible={this.state.confirmationToSignVisible}
+          onClosing={this.handleConfirmationClosing.bind(this)}
+          signerMailAddress={this.props.signerMailAddress}
+          fileHash={this.state.fileHash}/>
+      </span>
     );
   }
 
   constructor() {
     super();
-    this.state = {fileHash: ""};
+    this.state = {
+      fileHash: "",
+      confirmationToSignVisible: false,
+    };
     this.reader = new FileReader();
     this.hashFunction = "SHA256";
   }
 
-  handleFileChange(ev) {
-    const  selectedFile = ev.target.files[0];
+  handleFileChange(event) {
+    const  selectedFile = event.target.files[0];
 
     this.readAsArrayBuffer(selectedFile, () => {
       const  selectedFileContents = this.reader.result;
@@ -38,6 +45,14 @@ class  FileArea extends React.Component {
 
       this.setState({fileHash: hashValue});
     });
+  }
+
+  handleSign() {
+    this.setState({confirmationToSignVisible: true});
+  }
+
+  handleConfirmationClosing() {
+    this.setState({confirmationToSignVisible: false});
   }
 
   readAsArrayBuffer(file, callbackFunction) {
