@@ -1,5 +1,6 @@
 ﻿import React from "react";
 import './Modal.css';
+import REST_API from './REST_API';
 
 class  ConfirmationToSign extends React.Component {
   render() {
@@ -17,7 +18,7 @@ class  ConfirmationToSign extends React.Component {
               </p>
               { this.state.signButtonVisible &&
                 <p className="text-align-center">
-                  <button onClick={this.handleSign.bind(this)}>署名</button>
+                  <button onClick={this.handleDoButton.bind(this)}>{this.getDoButtonName()}</button>
                 </p>
               }
             </div>
@@ -30,26 +31,60 @@ class  ConfirmationToSign extends React.Component {
   constructor() {
     super();
     this.resetState = {
-      message: "このファイルに対して貴方の署名を追加します。",
+      message: "no message",
       signButtonVisible: true,
     };
     this.state = Object.assign({}, this.resetState);
+    this.operation = undefined;
     this.closeEnabled = true;
   }
 
-  reset() {
+  reset(operation) {
     this.setState(this.resetState);
+    this.operation = operation;
+    if (operation === "add") {
+      this.setState({message: "このファイルに対して貴方の署名を追加します。"});
+    } else {
+      this.setState({message: "このファイルに対する貴方の署名を削除します。"});
+    }
   }
 
-  handleSign() {
+  handleDoButton() {
+    if (this.operation === "add") {
+      this.handleSign();
+    } else if (this.operation === "remove") {
+      this.handleRemoveSignature();
+    }
+  }
+
+  async handleSign() {
     this.setState({message: "署名中……"});
     this.closeEnabled = false;
     this.setState({signButtonVisible: false});
-    console.log("署名：" + this.props.signerMailAddress + " " + this.props.fileHash)
-    setTimeout(() => {
-      this.setState({message: "署名しました。"});
+ 
+    const result = await REST_API.putFileHashSignatures(this.props.fileHash).catch( (err) => {
+      this.setState({message: String(err)});
+    });
+    if (result) {
+      this.setState({message: "署名しました。" + result});
       this.closeEnabled = true;
-    }, 1000)
+      this.props.onSigned();
+    }
+  }
+
+  async handleRemoveSignature() {
+    this.setState({message: "削除中……"});
+    this.closeEnabled = false;
+    this.setState({signButtonVisible: false});
+ 
+    const result = await REST_API.putFileHashSignatures(this.props.fileHash).catch( (err) => {
+      this.setState({message: String(err)});
+    });
+    if (result) {
+      this.setState({message: "削除しました。" + result});
+      this.closeEnabled = true;
+      this.props.onRemovedSignature();
+    }
   }
 
   handleClose(event) {
@@ -66,6 +101,16 @@ class  ConfirmationToSign extends React.Component {
   handleDefalut(event) {
     if (event.currentTarget !== event.target) { return }
     event.preventDefault();
+  }
+
+  getDoButtonName() {
+    if (this.operation === "add") {
+      return "署名";
+    } else if (this.operation === "remove") {
+      return "削除";
+    } else {
+      return ""
+    }
   }
 }
 export default ConfirmationToSign;

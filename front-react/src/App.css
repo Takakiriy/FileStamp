@@ -28,11 +28,12 @@
 .header-menu {
   margin-left: auto;
   margin-right: 5%;
-  color: red;
-  font-size: 1rem;
+  color: black;
+  font-size: 0.9rem;
 }
 
 .header-menu:hover {
+  color: blue;
   text-decoration: underline;
   cursor: pointer;
 }
@@ -40,6 +41,10 @@
 p {
   margin: 0;
   padding: 0.2rem;
+}
+
+.font-size-small {
+  font-size: 0.8rem;
 }
 
 p.App-small-text {

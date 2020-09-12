@@ -13,9 +13,15 @@ class  REST_APIClass {
   }
 
   async getTest() {
-    return this.axios.get('/api/HttpTriggerCSharp1')
+    return this.axios.get('/api/HttpTriggerCSharp1?name=86')
     .then( (response) => {
-      console.log(response);
+      return response.data;
+    })
+  }
+
+  async putFileHashSignatures(fileHash) {
+    return this.axios.get('/api/HttpTriggerCSharp1?name=' + fileHash)
+    .then( (response) => {
       return response.data;
     })
   }
