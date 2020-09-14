@@ -21,8 +21,6 @@ class  App extends React.Component {
           <p>
             Simple File Stamp version 0.04
           </p>
-          <button onClick={this.handleTestAPI.bind(this)}>TestaAPI</button><br/>
-          {this.state.testMessage}
         </div>
         <UserSetting
           visible={this.state.userSettingVisible}
@@ -30,6 +28,10 @@ class  App extends React.Component {
           mailAddress={this.state.userMailAddress}/>
       </div>
     );
+/*
+          <button onClick={this.handleTestAPI.bind(this)}>TestaAPI</button><br/>
+          {this.state.testMessage}
+*/
   }
 
   constructor() {

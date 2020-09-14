@@ -63,9 +63,9 @@ class  ConfirmationToSign extends React.Component {
     this.setState({message: "署名中……"});
     this.closeEnabled = false;
     this.setState({signButtonVisible: false});
- 
-    const result = await REST_API.putFileHashSignatures(this.props.fileHash)
-    .then( () => {
+
+    await REST_API.putFileHashSignatures(this.props.fileHash)
+    .then( (result) => {
       this.setState({message: "署名しました。" + result});
       this.props.onSigned();
     })
@@ -82,8 +82,8 @@ class  ConfirmationToSign extends React.Component {
     this.closeEnabled = false;
     this.setState({signButtonVisible: false});
  
-    const result = await REST_API.putFileHashSignatures(this.props.fileHash)
-    .then( () => {
+    await REST_API.putFileHashSignatures(this.props.fileHash)
+    .then( (result) => {
       this.setState({message: "削除しました。" + result});
       this.props.onRemovedSignature();
     }).catch( (err) => {

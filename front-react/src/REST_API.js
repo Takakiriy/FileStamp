@@ -23,6 +23,9 @@ class  REST_APIClass {
 
   async getToken() {
     const front_end_base = window.location.protocol +"//"+ window.location.hostname;
+    if (window.location.hostname.indexOf('localhost') >= 0) {
+      return;
+    }
 
     return this.axios.get(front_end_base + '/.auth/me')
     .then( (response) => {
@@ -33,6 +36,9 @@ class  REST_APIClass {
         }
       };
       return response.data;
+    })
+    .catch( (err) => {
+      window.location.reload();
     })
   }
 

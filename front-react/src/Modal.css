@@ -32,6 +32,11 @@
   font-size: 0.9rem;
 }
 
+.modal-window-user-setting {
+  min-width: 13rem;
+  padding: 0rem 0rem 0rem 1.5rem;
+}
+
 .right-align {
   display: table;
   width: 100%;

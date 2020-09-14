@@ -8,7 +8,7 @@ class  UserSetting extends React.Component {
       <div name="modal">
         <div className="modal-mask  text-align-right">
           <div className="vertical-align-middle  vertical-align-top" onClick={this.handleClose.bind(this)}>
-            <div className="modal-window" onClick={this.handleDefalut.bind(this)}>
+            <div className="modal-window modal-window-user-setting" onClick={this.handleDefalut.bind(this)}>
               <div className="right-align">
                 <button onClick={this.handleOK.bind(this)}>
                   Ⅹ
@@ -29,6 +29,10 @@ class  UserSetting extends React.Component {
               補足:<br/>
               <input type="text" value={this.state.supplement}
                 onChange={(event) => this.setState({supplement: event.target.value})}/>
+              </p>
+              <br/>
+              <p >
+                <a href="/.auth/logout?post_logout_redirect_uri=/">サイン アウト</a>
               </p>
             </div>
           </div>
