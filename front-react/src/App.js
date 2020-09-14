@@ -3,6 +3,7 @@ import stamp from './stamp.svg';
 import './App.css';
 import FileArea from './FileArea';
 import UserSetting from './UserSetting';
+import REST_API from './REST_API';
 
 class  App extends React.Component {
   render() {
@@ -17,14 +18,11 @@ class  App extends React.Component {
         </div>
         <br/>
         <div className="footer">
-          <p className="App-small-text">
-            「ファイルの選択」ボタンを押してファイルを選ぶか、<br/>
-            「ファイルの選択」ボタンの上にファイルをドラッグ＆ドロップすると、<br/>
-            現在の署名の状況が表示されます。
-          </p>
           <p>
-            Simple File Stamp version 0.03
+            Simple File Stamp version 0.04
           </p>
+          <button onClick={this.handleTestAPI.bind(this)}>TestaAPI</button><br/>
+          {this.state.testMessage}
         </div>
         <UserSetting
           visible={this.state.userSettingVisible}
@@ -40,7 +38,17 @@ class  App extends React.Component {
       html: "",
       userSettingVisible: false,
       userMailAddress: "taro-suzuki@example.com",
+      testMessage: "",
     };
+  }
+
+  componentDidMount() {
+    REST_API.getToken()
+    .then( () => {
+    })
+    .catch( (err) => {
+      this.setState({testMessage: String(err)});
+    });
   }
 
   handleUserSetting() {
@@ -49,6 +57,15 @@ class  App extends React.Component {
 
   handleUserSettingClosing() {
     this.setState({userSettingVisible: false});
+  }
+
+  async handleTestAPI() {
+    const result = await REST_API.getTest().catch( (err) => {
+      this.setState({testMessage: String(err)});
+    });
+    if (result) {
+      this.setState({testMessage: "成功: " + result});
+    }
   }
 }
 

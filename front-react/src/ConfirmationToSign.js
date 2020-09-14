@@ -43,9 +43,11 @@ class  ConfirmationToSign extends React.Component {
     this.setState(this.resetState);
     this.operation = operation;
     if (operation === "add") {
-      this.setState({message: "このファイルに対して貴方の署名を追加します。"});
+      this.setState({message: "ファイル（" + this.props.fileName + "）に対して貴方（" +
+        this.props.signerMailAddress + "）の署名を追加します。"});
     } else {
-      this.setState({message: "このファイルに対する貴方の署名を削除します。"});
+      this.setState({message: "ファイル（" + this.props.fileName + "）に対する貴方（" +
+        this.props.signerMailAddress + "）の署名を削除します。"});
     }
   }
 
@@ -62,14 +64,17 @@ class  ConfirmationToSign extends React.Component {
     this.closeEnabled = false;
     this.setState({signButtonVisible: false});
  
-    const result = await REST_API.putFileHashSignatures(this.props.fileHash).catch( (err) => {
-      this.setState({message: String(err)});
-    });
-    if (result) {
+    const result = await REST_API.putFileHashSignatures(this.props.fileHash)
+    .then( () => {
       this.setState({message: "署名しました。" + result});
-      this.closeEnabled = true;
       this.props.onSigned();
-    }
+    })
+    .catch( (err) => {
+      this.setState({message: String(err)});
+    })
+    .finally( () => {
+      this.closeEnabled = true;
+    })
   }
 
   async handleRemoveSignature() {
@@ -77,14 +82,16 @@ class  ConfirmationToSign extends React.Component {
     this.closeEnabled = false;
     this.setState({signButtonVisible: false});
  
-    const result = await REST_API.putFileHashSignatures(this.props.fileHash).catch( (err) => {
-      this.setState({message: String(err)});
-    });
-    if (result) {
+    const result = await REST_API.putFileHashSignatures(this.props.fileHash)
+    .then( () => {
       this.setState({message: "削除しました。" + result});
-      this.closeEnabled = true;
       this.props.onRemovedSignature();
-    }
+    }).catch( (err) => {
+      this.setState({message: String(err)});
+    })
+    .finally( () => {
+      this.closeEnabled = true;
+    })
   }
 
   handleClose(event) {

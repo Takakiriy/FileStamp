@@ -10,17 +10,34 @@ class  REST_APIClass {
       },
       responseType: 'json'  
     });
+    this.token = null;
+    this.defaultAxiosOptions = {};
   }
 
   async getTest() {
-    return this.axios.get('/api/HttpTriggerCSharp1?name=86')
+    return this.axios.get('/api/HttpTriggerCSharp1?name=86', this.defaultAxiosOptions)
     .then( (response) => {
       return response.data;
     })
   }
 
+  async getToken() {
+    const front_end_base = window.location.protocol +"//"+ window.location.hostname;
+
+    return this.axios.get(front_end_base + '/.auth/me')
+    .then( (response) => {
+      this.token = response.data[0].access_token;
+      this.defaultAxiosOptions = {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        }
+      };
+      return response.data;
+    })
+  }
+
   async putFileHashSignatures(fileHash) {
-    return this.axios.get('/api/HttpTriggerCSharp1?name=' + fileHash)
+    return this.axios.get('/api/HttpTriggerCSharp1?name=' + fileHash, this.defaultAxiosOptions)
     .then( (response) => {
       return response.data;
     })

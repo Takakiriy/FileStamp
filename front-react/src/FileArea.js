@@ -8,7 +8,7 @@ class  FileArea extends React.Component {
     return (
       <span>
         <p className="App-file-area">
-          <input type="file" onChange={this.handleSelectingFileChanged.bind(this)} />
+          <input className="file-selector" type="file" onChange={this.handleSelectingFileChanged.bind(this)} />
           &nbsp;
           <button onClick={this.handleSign.bind(this)} disabled={this.state.signDisabled}>署名する</button>
         </p>
@@ -16,14 +16,16 @@ class  FileArea extends React.Component {
           {this.getFileHashView()}&nbsp;
         </p>
         {this.getSignatures()}
+        {this.getGuide()}
         <ConfirmationToSign
+          fileName={this.state.fileName}
+          signerMailAddress={this.props.signerMailAddress}
+          fileHash={this.state.fileHash}
           ref={this.refConfirmationToSign}
           visible={this.state.confirmationToSignVisible}
           onSigned={this.handleSigned.bind(this)}
           onRemovedSignature={this.handleRemovedSignature.bind(this)}
-          onClosing={this.handleConfirmationClosing.bind(this)}
-          signerMailAddress={this.props.signerMailAddress}
-          fileHash={this.state.fileHash}/>
+          onClosing={this.handleConfirmationClosing.bind(this)}/>
       </span>
     );
   }
@@ -31,6 +33,7 @@ class  FileArea extends React.Component {
   constructor() {
     super();
     this.state = {
+      fileName: "",
       fileHash: "",
       signatures: [],
       confirmationToSignVisible: false,
@@ -43,24 +46,34 @@ class  FileArea extends React.Component {
 
   handleSelectingFileChanged(event) {
     const  selectedFile = event.target.files[0];
+    if (selectedFile) {
 
-    this.readAsArrayBuffer(selectedFile, () => {
-      const  selectedFileContents = this.reader.result;
-      const  hashCalculator = crypto.createHash( this.hashFunction );
-      hashCalculator.update(new Buffer( selectedFileContents ));
-      const  hashValue = hashCalculator.digest("hex");
-      const signatures = {
-        "saburo-suzuki@example.com": "2020-09-10",
-        "jiro-suzuki@example.com": "2020-09-11",
-        // "taro-suzuki@example.com": "2020-09-12",
-      };
+      this.readAsArrayBuffer(selectedFile, () => {
+        const  selectedFileContents = this.reader.result;
+        const  hashCalculator = crypto.createHash( this.hashFunction );
+        hashCalculator.update(new Buffer( selectedFileContents ));
+        const  hashValue = hashCalculator.digest("hex");
+        const signatures = {
+          "saburo-suzuki@example.com": "2020-09-10",
+          "jiro-suzuki@example.com": "2020-09-11",
+          // "taro-suzuki@example.com": "2020-09-12",
+        };
 
-      this.setState({
-        fileHash: hashValue,
-        signatures,
-        signDisabled: this.props.signerMailAddress in signatures,
+        this.setState({
+          fileName: selectedFile.name,
+          fileHash: hashValue,
+          signatures,
+          signDisabled: this.props.signerMailAddress in signatures,
+        });
       });
-    });
+    } else {
+      this.setState({
+        fileName: "",
+        fileHash: "",
+        signatures: [],
+        signDisabled: true,
+      });
+    }
   }
 
   handleSign() {
@@ -112,12 +125,23 @@ class  FileArea extends React.Component {
         <span className="font-size-small">署名済ユーザー</span><br/>
         {Object.keys(this.state.signatures).map((signature, i) => {
           if (this.props.signerMailAddress === signature) {
-            return <span key={i}>{signature} <button onClick={this.handleDeleteSign.bind(this)} >削除</button><br/></span>;
+            return <span className="signed-user" key={i}>{signature}
+              <button onClick={this.handleDeleteSign.bind(this)} >削除</button><br/></span>;
           } else {
-            return <span key={i}>{signature}<br/></span>;
+            return <span className="signed-user" key={i}>{signature}<br/></span>;
           }
         }).reverse()}
       </span>
+    );
+  }
+
+  getGuide() {
+    return ( this.state.signatures.length !== 0 ? null :
+      <p className="guide">
+      「ファイルの選択」ボタンを押してファイルを選ぶか、<br/>
+      「ファイルの選択」ボタンの上にファイルをドラッグ＆ドロップすると、<br/>
+      現在の署名の状況が表示されます。
+    </p>
     );
   }
 }
