@@ -2,6 +2,30 @@
 
 ![スクリーンショット](./document/screen_shot.png)
 
+<!-- TOC depthFrom:1 -->
+
+- [File Stamp](#file-stamp)
+- [File Stamp Webアプリケーションを開く](#file-stamp-webアプリケーションを開く)
+- [概要](#概要)
+  - [署名をする](#署名をする)
+  - [署名者の一覧](#署名者の一覧)
+  - [署名の取り消し](#署名の取り消し)
+- [当サービスの電子署名の信ぴょう性について](#当サービスの電子署名の信ぴょう性について)
+  - [目的](#目的)
+  - [ファイルの内容の扱い](#ファイルの内容の扱い)
+  - [ファイルの内容のハッシュ値](#ファイルの内容のハッシュ値)
+  - [署名者の証明方法](#署名者の証明方法)
+  - [個人情報の扱い](#個人情報の扱い)
+  - [電子署名の扱い](#電子署名の扱い)
+  - [無保証](#無保証)
+- [File Stamp のシステム構成](#file-stamp-のシステム構成)
+  - [User](#user)
+  - [Azure Active Directory](#azure-active-directory)
+  - [front-react](#front-react)
+  - [back-azure](#back-azure)
+- [手順メモ](#手順メモ)
+
+<!-- /TOC -->
 
 # File Stamp Webアプリケーションを開く
 
@@ -195,3 +219,34 @@ Cosmos DB を操作します。
 - プログラミング言語: C#
 
 Visual Studio のエクステンションで Azure Functions にデプロイします。
+
+
+# 手順メモ
+
+- [Azure App Service でユーザーをエンド ツー エンドで認証および承認する手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_E2E_auth/steps.yaml)
+- [App Service へデプロイする手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_AppService/steps.yaml)
+- [Azure Functions とそのデプロイの手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_functions_cs/steps.yaml)
+- [Jenkins + Azure AKS の手順メモ](https://github.com/Takakiriy/azure-voting-app-redis/blob/master/steps.yaml)
+
+手順メモは YAMLで記述されているため、ツリー構造を階層表示することができます。
+| 操作 | Visual Studio Code での手順 |
+| ---- | ------------------ |
+| Fold All （すべて折りたたむ） | [Ctrl]+[K], [Ctrl]+[0] |
+| Unfold All, Collapse All （すべて開く） | [Ctrl]+[K], [Ctrl]+[J] |
+| 子孫ノードを全て開く | > を [Shift]+クリック。Breadcrumbs 内では [Alt]+クリック |
+| 子ノードを全て開く（孫は閉じる） | > を [Shift]+２回クリック |
+
+クラウドのプロバイダーのドキュメントには
+親切にチュートリアルが用意されていますが、
+多くの場合、書いてある通りに操作しても
+期待通りの動作をしません。
+
+原因は、書いてあることが不十分であったり、
+前提となっている設定状態が考慮されていなかったり、
+内容が古かったりするためですが、
+そうなったときは、海外のインターネットの情報を検索することはもちろん、
+ベースとなる技術の学習、多くの設定項目の状況の確認などに
+多くの時間がとられてしまいます。
+
+手順メモは、そういった作業が再び発生しないようにするためのものです。
+チュートリアルの不具合を修正した結果という位置づけです。
