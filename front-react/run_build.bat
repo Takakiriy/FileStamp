@@ -5,8 +5,8 @@ set commands=
 set commands=%commands%  cd  $(cygpath --unix '%~d0%~p0');
 set commands=%commands%  export PATH=$(cygpath --unix '%~d0%~p0')node_modules/.bin:${PATH};
 
-set commands=%commands%  echo 'Restore node_modules';
-set commands=%commands%  npm ci;
+if not exist "node_modules"  set commands=%commands%  echo 'Restore node_modules';
+if not exist "node_modules"  set commands=%commands%  npm ci;
 set commands=%commands%  echo 'rm -rf build';
 set commands=%commands%  rm -rf build;
 set commands=%commands%  echo 'npm run build';

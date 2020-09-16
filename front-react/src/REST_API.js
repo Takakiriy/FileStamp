@@ -15,7 +15,7 @@ class  REST_APIClass {
   }
 
   async getTest() {
-    return this.axios.get('/api/HttpTriggerCSharp1?name=86', this.defaultAxiosOptions)
+    return this.axios.get('/api/HttpTriggerFunctionKey', this.defaultAxiosOptions)
     .then( (response) => {
       return response.data;
     })

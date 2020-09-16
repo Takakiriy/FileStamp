@@ -1,4 +1,18 @@
-﻿# Azure CLI インストール スクリプト（Visual Studio Code なし）
+﻿# Visual Studio Code で Azure CLI を使えるようにする
+
+script.sh ファイルは使いません。
+
+1. Docker for Windows をインストール https://docs.docker.com/
+  Kubernetes もインストールされます
+2. Git をインストール (例: Git-2.27.0-64-bit.exe) https://git-scm.com/downloads
+3. Azure CLI をインストール (例: azure-cli-2.10.1.msi) https://docs.microsoft.com/ja-jp/cli/azure/install-azure-cli-windows?view=azure-cli-latest&tabs=azure-cli
+4. Visual Studio Code (VSCode) をインストール (例： VSCodeUserSetup-x64-1.48.2.exe) https://code.visualstudio.com/docs/?dv=win
+5. VSCode の次のエクステンションをインストール: "Docker", "Kubernetes", "Azure Tools", "Azure Kubernetes Service"
+
+以上で、VSCode のターミナルで、docker, docker-compose, kubectl コマンドが使えます。
+
+
+# Azure CLI インストール スクリプト（Visual Studio Code なし）
 
 このスクリプトは、以下をインストールします。
 
@@ -28,17 +42,3 @@ Azure Functions Core Tools のバージョンは、最新バージョンです�
 インストールしたコマンドが使える bash を開くには、インストールした後で、
 開発するプロジェクトのフォルダーを `run_open.bat` ファイルにドラッグ＆ドロップします。
 インストールしたコマンドが使える bash を開くには、インストールした後で、開発するプロジェクトのフォルダーを `run_open.bat` ファイルにドラッグ＆ドロップします。
-
-
-# Visual Studio Code で Azure CLI を使えるようにする
-
-script.sh ファイルは使いません。
-
-1. Docker for Windows をインストール https://docs.docker.com/
-  Kubernetes もインストールされます
-2. Git をインストール (例: Git-2.27.0-64-bit.exe) https://git-scm.com/downloads
-3. Azure CLI をインストール (例: azure-cli-2.10.1.msi) https://docs.microsoft.com/ja-jp/cli/azure/install-azure-cli-windows?view=azure-cli-latest&tabs=azure-cli
-4. Visual Studio Code (VSCode) をインストール (例： VSCodeUserSetup-x64-1.48.2.exe) https://code.visualstudio.com/docs/?dv=win
-5. VSCode の次のエクステンションをインストール: "Docker", "Kubernetes", "Azure Tools", "Azure Kubernetes Service"
-
-以上で、VSCode のターミナルで、docker, docker-compose, kubectl コマンドが使えます。

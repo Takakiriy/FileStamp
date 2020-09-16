@@ -19,9 +19,11 @@ class  App extends React.Component {
         <br/>
         <div className="footer">
           <p>
-            Simple File Stamp version 0.04
+            Simple File Stamp version 0.05c5
           </p>
         </div>
+          <button onClick={this.handleTestAPI.bind(this)}>TestaAPI</button><br/>
+          {this.state.testMessage}
         <UserSetting
           visible={this.state.userSettingVisible}
           onClosing={this.handleUserSettingClosing.bind(this)}
@@ -29,8 +31,6 @@ class  App extends React.Component {
       </div>
     );
 /*
-          <button onClick={this.handleTestAPI.bind(this)}>TestaAPI</button><br/>
-          {this.state.testMessage}
 */
   }
 
