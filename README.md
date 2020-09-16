@@ -23,7 +23,7 @@
   - [Azure Active Directory](#azure-active-directory)
   - [front-react](#front-react)
   - [back-azure](#back-azure)
-- [手順メモ](#手順メモ)
+- [手順メモ（開発者向け）](#手順メモ開発者向け)
 
 <!-- /TOC -->
 
@@ -221,32 +221,19 @@ Cosmos DB を操作します。
 Visual Studio のエクステンションで Azure Functions にデプロイします。
 
 
-# 手順メモ
+# 手順メモ（開発者向け）
 
 - [Azure App Service でユーザーをエンド ツー エンドで認証および承認する手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_E2E_auth/steps.yaml)
 - [App Service へデプロイする手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_AppService/steps.yaml)
 - [Azure Functions とそのデプロイの手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_functions_cs/steps.yaml)
 - [Jenkins + Azure AKS の手順メモ](https://github.com/Takakiriy/azure-voting-app-redis/blob/master/steps.yaml)
 
-手順メモは YAMLで記述されているため、ツリー構造を階層表示することができます。
+手順メモはチュートリアルに書かれていない情報を補足します。
+また、チェックリストとしても使える一覧性のある資料です。
+YAMLで記述されており、階層表示することができます。
 | 操作 | Visual Studio Code での手順 |
 | ---- | ------------------ |
 | Fold All （すべて折りたたむ） | [Ctrl]+[K], [Ctrl]+[0] |
 | Unfold All, Collapse All （すべて開く） | [Ctrl]+[K], [Ctrl]+[J] |
 | 子孫ノードを全て開く | > を [Shift]+クリック。Breadcrumbs 内では [Alt]+クリック |
 | 子ノードを全て開く（孫は閉じる） | > を [Shift]+２回クリック |
-
-クラウドのプロバイダーのドキュメントには
-親切にチュートリアルが用意されていますが、
-多くの場合、書いてある通りに操作しても
-期待通りの動作をしません。
-
-原因は、書いてあることが不十分であったり、
-前提となっている設定状態が考慮されていなかったり、
-内容が古かったりするためですが、
-そうなったときは、海外のインターネットの情報を検索することはもちろん、
-ベースとなる技術の学習、多くの設定項目の状況の確認などに
-多くの時間がとられてしまいます。
-
-手順メモは、そういった作業が再び発生しないようにするためのものです。
-チュートリアルの不具合を修正した結果という位置づけです。
