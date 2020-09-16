@@ -82,7 +82,7 @@ class  ConfirmationToSign extends React.Component {
     this.closeEnabled = false;
     this.setState({signButtonVisible: false});
  
-    await REST_API.putFileHashSignatures(this.props.fileHash)
+    await REST_API.deleteFileHashSignatures(this.props.fileHash)
     .then( (result) => {
       this.setState({message: "削除しました。" + result});
       this.props.onRemovedSignature();

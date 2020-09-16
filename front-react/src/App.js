@@ -19,7 +19,7 @@ class  App extends React.Component {
         <br/>
         <div className="footer">
           <p>
-            Simple File Stamp version 0.05c5
+            Simple File Stamp version 0.06a
           </p>
         </div>
           <button onClick={this.handleTestAPI.bind(this)}>TestaAPI</button><br/>

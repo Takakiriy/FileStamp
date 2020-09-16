@@ -181,8 +181,6 @@ Web App for Containers での継続的デプロイ（まだ調整中です）:
                 継続的なデプロイ: オン  #// ACR の Webhook に登録されます
                 OK: 「保存」ボタン
                 #// SKU Basic が必要な警告がされたとしても無視できます
-    （しばらくデプロイしていないときに必要）App Service の VM を起動します:
-        - https://portal.azure.com/ >> App Service >> （アプリ名） >> 概要 >> ブラウズ
     （しばらくデプロイしていないときに必要かもしれない）ACR Webhook を有効にする:
         - https://portal.azure.com/ >> コンテナー レジストリ >> （コンテナー名）
         - bash:
@@ -192,16 +190,19 @@ Web App for Containers での継続的デプロイ（まだ調整中です）:
     デプロイ:
         - 新しいタグ（バージョン）で、Docker イメージをビルドし、レジストリ(ACR)にプッシュします:
             - start run_build.bat
-            - docker build  -t sagep.azurecr.io/file-stamp-front:0.0.5a  .  #// 既存のタグで構いません
+            - docker build  -t sagep.azurecr.io/file-stamp-front:0.0.5c  .  #// 既存のタグで構いません
             - az acr login  --name "sagep"  #// しばらくデプロイしていないときのみ必要
-            - docker push  "sagep.azurecr.io/file-stamp-front:0.0.5a"
+            - docker push  "sagep.azurecr.io/file-stamp-front:0.0.5c"
             #// 「Azure の ACR に Docker イメージを登録する」を参照
                 #// ACR の Webhook が発動したことをログから確認できます
-                #// App Service が Webhook を受け取るのは、ACR が Webhook を発動してから 40秒後です
+                #// App Service が Webhook を受け取るのは、ACR が Webhook を発動してから 15～40秒後です
+        - （しばらくデプロイしていないときには）App Service の VM を起動します:
+            - https://portal.azure.com/ >> App Service >> （アプリ名） >> 概要 >> ブラウズ
         - デプロイされたことをログで確認する:
             - https://portal.azure.com/ >> App Service >> （アプリ名） >> コンテナーの設定
             - 「最新の情報に更新」ボタンを押して、新しいタグがダウンロードされたことを確認します。
                 #// ログの一部の例： Status: Downloaded newer image for sagep.azurecr.io/file-stamp-front:0.0.4a
+                #// ログの最後: initialized successfully and is ready to serve requests.
     （必要なら）アプリを再起動します:
         Azure portal の場合:
             - https://portal.azure.com/ >> App Service >> （アプリ名） >> 概要 >> 再起動

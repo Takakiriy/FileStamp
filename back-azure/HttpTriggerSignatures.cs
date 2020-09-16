@@ -11,6 +11,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace Company.Function
 {
@@ -21,28 +22,33 @@ namespace Company.Function
         public const string CosmosDBContainerID = "StampContainer";
     }
         
-    public static class HttpTriggerCSharp1
+    public static class Signature
     {
-        [FunctionName("HttpTriggerCSharp1")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+        [FunctionName("Signatures_POST")]
+        public static async Task<IActionResult> OnHttpPost(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "signatures")] HttpRequest req,
+            ILogger log,
+            ClaimsPrincipal claimsPrincipal)
         {
-            await Program.Main();
+            // HTTPS GET メソッドや DELETE メソッドを使わない理由は、
+            // ・暗号化されることが確実ではない URL にはファイルのハッシュ値を含められないこと
+            //   https://hogem.hatenablog.com/entry/20100307/1267977441
+            //   https://worklog.be/archives/3398
+            // ・ファイルのハッシュ値が漏洩して他の人が署名の状況を確認できることがないようにすること
+            // ・axios の get では body が送れないこと
+            // ・HTTP GET の body は（古い仕様では）無視されること
+            //   https://stackoverflow.com/questions/978061/http-get-with-request-body
+            // ・HTTP DELETE で body に何か入れると、Chrome か Azure App Service が応答しなくなること
+            string method = req.Query["method"];
 
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation($"C# HTTP trigger function processed a request {method}.");
 
-            string name = req.Query["name"];
-
+            var  mailAddress = claimsPrincipal.Identity.Name;
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            // await Program.Main();
 
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "\"This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.\""
-                : $"\"Hello, {name}. This HTTP triggered function executed successfully.\"";
-
-            return new OkObjectResult(responseMessage);
+            return new OkObjectResult($"\"{method}: {data.fileHash}, {mailAddress}\"");
         }
     }
 

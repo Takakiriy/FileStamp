@@ -14,13 +14,6 @@ class  REST_APIClass {
     this.defaultAxiosOptions = {};
   }
 
-  async getTest() {
-    return this.axios.get('/api/HttpTriggerFunctionKey', this.defaultAxiosOptions)
-    .then( (response) => {
-      return response.data;
-    })
-  }
-
   async getToken() {
     const front_end_base = window.location.protocol +"//"+ window.location.hostname;
     if (window.location.hostname.indexOf('localhost') >= 0) {
@@ -42,8 +35,22 @@ class  REST_APIClass {
     })
   }
 
+  async getTest() {
+    return this.axios.post('/api/signatures?method=get', {fileHash: "123"}, this.defaultAxiosOptions)
+    .then( (response) => {
+      return response.data;
+    })
+  }
+
   async putFileHashSignatures(fileHash) {
-    return this.axios.get('/api/HttpTriggerCSharp1?name=' + fileHash, this.defaultAxiosOptions)
+    return this.axios.post('/api/signatures?method=put', {fileHash}, this.defaultAxiosOptions)
+    .then( (response) => {
+      return response.data;
+    })
+  }
+
+  async deleteFileHashSignatures(fileHash) {
+    return this.axios.post('/api/signatures?method=delete', {fileHash}, this.defaultAxiosOptions)
     .then( (response) => {
       return response.data;
     })
