@@ -1,6 +1,7 @@
 ﻿import React from "react";
 import './Modal.css';
 import REST_API from './REST_API';
+import { MyContext } from './MyContext';
 
 class  ConfirmationToSign extends React.Component {
   render() {
@@ -11,14 +12,14 @@ class  ConfirmationToSign extends React.Component {
           <div className="vertical-align-middle" onClick={this.handleClose.bind(this)}>
             <div className="modal-window" onClick={this.handleDefalut.bind(this)}>
               <div className="text-align-right">
-                <button onClick={this.handleClose.bind(this)}>Ⅹ</button>
+                <button onClick={this.handleClose.bind(this)} data-test="cancel">Ⅹ</button>
               </div>
-              <p>
+              <p data-test="guide">
                 {this.state.message}
               </p>
               { this.state.signButtonVisible &&
                 <p className="text-align-center">
-                  <button onClick={this.handleDoButton.bind(this)}>{this.getDoButtonName()}</button>
+                  <button onClick={this.handleDoButton.bind(this)} data-test="ok">{this.getDoButtonName()}</button>
                 </p>
               }
             </div>
@@ -27,6 +28,7 @@ class  ConfirmationToSign extends React.Component {
       </div>
     );
   }
+  static contextType = MyContext;
 
   constructor() {
     super();
@@ -47,7 +49,7 @@ class  ConfirmationToSign extends React.Component {
         this.props.signerMailAddress + "）の署名を追加します。"});
     } else {
       this.setState({message: "ファイル（" + this.props.fileName + "）に対する貴方（" +
-        this.props.signerMailAddress + "）の署名を削除します。"});
+        this.props.signerMailAddress + "）の署名を取り消します。"});
     }
   }
 
@@ -78,13 +80,13 @@ class  ConfirmationToSign extends React.Component {
   }
 
   async handleRemoveSignature() {
-    this.setState({message: "削除中……"});
+    this.setState({message: "取り消し中……"});
     this.closeEnabled = false;
     this.setState({signButtonVisible: false});
  
     await REST_API.deleteFileHashSignatures(this.props.fileHash)
     .then( (result) => {
-      this.setState({message: "削除しました。" + result});
+      this.setState({message: "取り消しました。" + result});
       this.props.onRemovedSignature();
     }).catch( (err) => {
       this.setState({message: String(err)});

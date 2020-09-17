@@ -79,3 +79,8 @@ select.dropdown {
     transform: rotate(-360deg);
   }
 }
+
+.test-mode-view {
+  font-weight: bold;
+  color: red;
+}

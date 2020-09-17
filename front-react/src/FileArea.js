@@ -8,9 +8,9 @@ class  FileArea extends React.Component {
     return (
       <span>
         <p className="App-file-area">
-          <input className="file-selector" type="file" onChange={this.handleSelectingFileChanged.bind(this)} />
+          <input className="file-selector" type="file" onChange={this.handleSelectingFileChanged.bind(this)} data-test="file-selector"/>
           &nbsp;
-          <button onClick={this.handleSign.bind(this)} disabled={this.state.signDisabled}>署名する</button>
+          <button onClick={this.handleSign.bind(this)} disabled={this.state.signDisabled} data-test="sign">署名する</button>
         </p>
         <p className="App-hash-value">
           {this.getFileHashView()}&nbsp;
@@ -101,7 +101,7 @@ class  FileArea extends React.Component {
     this.setState({confirmationToSignVisible: false});
   }
 
-  handleDeleteSign() {
+  handleDeleteSignature() {
     this.refConfirmationToSign.current.reset("remove");
     this.setState({confirmationToSignVisible: true});
   }
@@ -125,10 +125,10 @@ class  FileArea extends React.Component {
         <span className="font-size-small">署名済ユーザー</span><br/>
         {Object.keys(this.state.signatures).map((signature, i) => {
           if (this.props.signerMailAddress === signature) {
-            return <span className="signed-user" key={i}>{signature}
-              <button onClick={this.handleDeleteSign.bind(this)} >削除</button><br/></span>;
+            return <span className="signed-user" key={i} data-test={'signature-' + i}>{signature}
+              <button onClick={this.handleDeleteSignature.bind(this)} data-test="delete-signature">削除</button><br/></span>;
           } else {
-            return <span className="signed-user" key={i}>{signature}<br/></span>;
+            return <span className="signed-user" key={i} data-test={'signature-' + i}>{signature}<br/></span>;
           }
         }).reverse()}
       </span>

@@ -213,3 +213,4 @@ Web App for Containers での継続的デプロイ（まだ調整中です）:
 Azure 上の Web アプリケーションを開く:
     - ブラウザーを一度終了する  #// 終了しないと認証エラーになる可能性があります
     - https://sagep-app-service-v004.azurewebsites.net
+    - ブラウザーをリロードする  #// リロードしないと一部が古いままになる可能性があります

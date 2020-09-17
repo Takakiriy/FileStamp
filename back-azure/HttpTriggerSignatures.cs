@@ -42,13 +42,30 @@ namespace Company.Function
             string method = req.Query["method"];
 
             log.LogInformation($"C# HTTP trigger function processed a request {method}.");
-
-            var  mailAddress = claimsPrincipal.Identity.Name;
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            Program.req = req;
+            Program.log = log;
+            Program.claimsPrincipal = claimsPrincipal;
+            var  mailAddress = getMailAddress();
+            var  requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
+
             // await Program.Main();
 
             return new OkObjectResult($"\"{method}: {data.fileHash}, {mailAddress}\"");
+        }
+
+        private static string getMailAddress() {
+            var  mailAddress = "";
+            var  authorizedMailAddress = Program.claimsPrincipal.Identity.Name;
+            var  testMailAddress = Program.req.Query["mail"].ToString();
+
+            var  isTestMode = (authorizedMailAddress == null  &&  testMailAddress.EndsWith("@example.com"));
+            if (isTestMode) {
+                mailAddress = testMailAddress;
+            } else {
+                mailAddress = authorizedMailAddress;
+            }
+            return  mailAddress;
         }
     }
 
@@ -57,6 +74,9 @@ namespace Company.Function
         private CosmosClient cosmosClient;
         private Database database;
         private Container container;
+        public static HttpRequest req; 
+        public static ILogger log; 
+        public static ClaimsPrincipal claimsPrincipal;
 
 
         // Main()

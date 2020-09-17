@@ -1,0 +1,7 @@
+**/node_modules
+**/_logInCookie*.json
+**/_logInLocalStorage*.json
+**/_manual.md
+**/_temporary*.json
+**/cypress.env*.js
+**/cypress.env*.json

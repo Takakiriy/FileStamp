@@ -4,44 +4,54 @@ import './App.css';
 import FileArea from './FileArea';
 import UserSetting from './UserSetting';
 import REST_API from './REST_API';
+import { MyContext, MyContextValue } from './MyContext';
 
 class  App extends React.Component {
   render() {
     return (
-      <div className="App">
-        <div className="header-menu" onClick={this.handleUserSetting.bind(this)}>ユーザー情報</div>
-        <br/>
-        <div className="main">
-          <img src={stamp} className="App-logo" alt="logo" />
-          <br/><br/>
-          <FileArea signerMailAddress={this.state.userMailAddress}/>
+      <MyContext.Provider  value={MyContextValue}>
+        <div className="App">
+          <div className="header-menu" onClick={this.handleUserSetting.bind(this)}>
+            {this.getTestModeView()}ユーザー情報</div>
+          <br/>
+          <div className="main">
+            <img src={stamp} className="App-logo" alt="logo" />
+            <br/><br/>
+            <FileArea signerMailAddress={this.state.userMailAddress}/>
+          </div>
+          <br/>
+          <div className="footer">
+            <p>
+              Simple File Stamp version 0.06a
+            </p>
+          </div>
+            <button onClick={this.handleTestAPI.bind(this)} data-test="test">TestAPI</button><br/>
+            {this.state.testMessage}
+          <UserSetting
+            visible={this.state.userSettingVisible}
+            onClosing={this.handleUserSettingClosing.bind(this)}
+            mailAddress={this.state.userMailAddress}/>
         </div>
-        <br/>
-        <div className="footer">
-          <p>
-            Simple File Stamp version 0.06a
-          </p>
-        </div>
-          <button onClick={this.handleTestAPI.bind(this)}>TestaAPI</button><br/>
-          {this.state.testMessage}
-        <UserSetting
-          visible={this.state.userSettingVisible}
-          onClosing={this.handleUserSettingClosing.bind(this)}
-          mailAddress={this.state.userMailAddress}/>
-      </div>
+      </MyContext.Provider>
     );
 /*
 */
   }
+  static contextType = MyContext;
 
   constructor() {
     super();
+    const queryParameters = new URLSearchParams(window.location.search);
+
     this.state = {
       html: "",
       userSettingVisible: false,
-      userMailAddress: "taro-suzuki@example.com",
+      userMailAddress: (queryParameters.has("mail") ? queryParameters.get("mail") : "taro-suzuki@example.com"),
       testMessage: "",
+      isTestMode: (queryParameters.has("mail") && queryParameters.get("mail").endsWith("@example.com")),
     };
+    MyContextValue.isTestMode = this.state.isTestMode;
+    MyContextValue.userMailAddress = this.state.userMailAddress;
   }
 
   componentDidMount() {
@@ -67,6 +77,14 @@ class  App extends React.Component {
     });
     if (result) {
       this.setState({testMessage: "成功: " + result});
+    }
+  }
+
+  getTestModeView() {
+    if (this.state.isTestMode) {
+      return <span className="test-mode-view">Test Mode </span>;
+    } else {
+      return null;
     }
   }
 }
