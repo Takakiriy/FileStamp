@@ -29,6 +29,19 @@ namespace Functions.Tests
             return qs;
         }
 
+        public static HttpRequest CreateHttpRequest(
+            Dictionary<string, StringValues> queryParameters,
+            string body)
+        {
+            var context = new DefaultHttpContext();
+            var request = context.Request;
+            request.Query = new QueryCollection(
+                queryParameters);
+            request.Body = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(
+                body));
+            return request;
+        }
+
         public static HttpRequest CreateHttpRequest(string queryStringKey, string queryStringValue)
         {
             var context = new DefaultHttpContext();

@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.Configuration;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
@@ -9,12 +7,9 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.Cosmos;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Security.Claims;
-using Microsoft.Extensions.Primitives;
-using System.Threading;
 
 namespace Company.Function
 {
@@ -58,18 +53,22 @@ namespace Company.Function
                 var  args = new FileStampArgument();
                 args.FileHash = requestBody.fileHash;
                 args.Signer = mailAddress;
-                args.Date = DateTime.Now.ToString("yyyy-MM-dd");
-log.LogInformation($"DateTime.Now {DateTime.Now}.");
+                args.Date = Program.GetNowUTC();
 
                 await Program.AddSignature(args);
                 return new OkObjectResult($"\"{method}: {requestBody.fileHash}, {mailAddress}\"");
+            }
+            else if (method == "get")
+            {
+                var responseBody = await Program.GetSignatures((string)requestBody.fileHash);
+                return new OkObjectResult(responseBody);
             }
             else if (method == "delete")
             {
                 var  args = new FileStampArgument();
                 args.FileHash = requestBody.fileHash;
                 args.Signer = mailAddress;
-                args.Date = DateTime.Now.ToString("yyyy-MM-dd");
+                args.Date = Program.GetNowUTC();
 
                 await Program.RemoveSignature(args);
                 return new OkObjectResult($"\"{method}: {requestBody.fileHash}, {mailAddress}\"");
@@ -113,6 +112,7 @@ log.LogInformation($"DateTime.Now {DateTime.Now}.");
                         data.Signatures[array.Length - 1] = mySignature;
                     } else {
                         mySignature.IsDeleted = false;
+                        mySignature.Date = args.Date;
                     }
 
                     await db.PutSignature(data);
@@ -153,6 +153,7 @@ log.LogInformation($"DateTime.Now {DateTime.Now}.");
                     if (signature.Signer == args.Signer) {
 
                         signature.IsDeleted = true;
+                        signature.Date = args.Date;
                         isFound = true;
                     }
                 }
@@ -181,6 +182,20 @@ log.LogInformation($"DateTime.Now {DateTime.Now}.");
         }
 
 
+        // GetSignatures()
+        public static async Task<string>  GetSignatures(string fileHash) {
+            var  db = new FileStampDataBase();
+            await db.SetUp();
+
+            var data = await db.GetSignature(fileHash);
+            if (data != null) {
+                return  JsonConvert.SerializeObject(data);
+            } else {
+                return  "";
+            }
+        }
+
+
         // GetMailAddress()
         public static string GetMailAddress() {
             var  mailAddress = "";
@@ -194,6 +209,12 @@ log.LogInformation($"DateTime.Now {DateTime.Now}.");
                 mailAddress = authorizedMailAddress;
             }
             return  mailAddress;
+        }
+
+
+        // GetNowUTC()
+        public static string  GetNowUTC() {
+            return  DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
         public static HttpRequest req; 
