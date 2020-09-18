@@ -225,7 +225,7 @@ Visual Studio のエクステンションで Azure Functions にデプロイし�
 
 - プロジェクトの操作手順
   - [フロントエンド React アプリの steps.yaml](https://github.com/Takakiriy/FileStamp/blob/master/front_react/front_react/steps.yaml)
-  - [cypress を使ったフロントエンドのテストの steps.yaml](https://github.com/Takakiriy/FileStamp/blob/master/front_react/test_xUnit/steps.yaml)
+  - [cypress を使ったフロントエンドのテストの steps.yaml](https://github.com/Takakiriy/FileStamp/blob/master/front_react/test_cypress/README.md)
   - [バックエンド C# 関数の steps.yaml](https://github.com/Takakiriy/FileStamp/blob/master/back_azure/back_azure/steps.yaml)
   - [xUnit を使ったバックエンドのテストの steps.yaml](https://github.com/Takakiriy/FileStamp/blob/master/back_azure/test_xUnit/steps.yaml)
 - 一般的な操作手順 
