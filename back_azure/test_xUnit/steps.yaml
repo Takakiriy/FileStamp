@@ -1,0 +1,20 @@
+テスト プロジェクトを新規作成します（作成済み）:
+    xUnit を使うプロジェクトを新規作成します:
+        - 参考: https://www.buildinsider.net/language/dotnetcore/07
+        - dotnet add reference コマンドで、テスト プロジェクトからテスト対象プロジェクトへ参照します
+    Azure Function のエントリー関数の引数にある ILogger が使えるようにします:
+        - 参考: https://docs.microsoft.com/ja-jp/azure/azure-functions/functions-test-a-function#c-in-visual-studio
+        - ただし、this.Logs.Add の直後に Console.WriteLine を追加して、表示されるように変更
+    Microsoft.AspNetCore が using できるようにします:
+        - 参考: https://docs.microsoft.com/ja-jp/aspnet/core/fundamentals/target-aspnetcore?view=aspnetcore-3.1&tabs=visual-studio-code#support-both-hosting-models
+
+テストします:
+    - bash:
+        - cd  "test_xUnit"
+        - dotnet test
+
+デバッグします:
+    - Visual Studio Code を起動します
+    - "[ File >> Open Folder ] で親フォルダー（back_azure.sln ファイルがあるフォルダー）を開きます"
+    - もし、右下に [ Restore ] ボタンが表示されたら、そのボタンを押します
+    - テストのソースファイル（例：HttpTriggerSignatures.test.cs）に付いた [ Run Test | Debug Test ] ボタンを押します

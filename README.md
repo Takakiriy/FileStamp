@@ -223,10 +223,16 @@ Visual Studio のエクステンションで Azure Functions にデプロイし�
 
 # 手順メモ（開発者向け）
 
-- [Azure App Service でユーザーをエンド ツー エンドで認証および承認する手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_E2E_auth/steps.yaml)
-- [App Service へデプロイする手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_AppService/steps.yaml)
-- [Azure Functions とそのデプロイの手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_functions_cs/steps.yaml)
-- [Jenkins + Azure AKS の手順メモ](https://github.com/Takakiriy/azure-voting-app-redis/blob/master/steps.yaml)
+- プロジェクトの操作手順
+  - [フロントエンド React アプリの steps.yaml](https://github.com/Takakiriy/FileStamp/blob/master/front_react/front_react/steps.yaml)
+  - [cypress を使ったフロントエンドのテストの steps.yaml](https://github.com/Takakiriy/FileStamp/blob/master/front_react/test_xUnit/steps.yaml)
+  - [バックエンド C# 関数の steps.yaml](https://github.com/Takakiriy/FileStamp/blob/master/back_azure/back_azure/steps.yaml)
+  - [xUnit を使ったバックエンドのテストの steps.yaml](https://github.com/Takakiriy/FileStamp/blob/master/back_azure/test_xUnit/steps.yaml)
+- 一般的な操作手順 
+  - [Azure App Service でユーザーをエンド ツー エンドで認証および承認する手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_E2E_auth/steps.yaml)
+  - [App Service へデプロイする手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_AppService/steps.yaml)
+  - [Azure Functions とそのデプロイの手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_functions_cs/steps.yaml)
+  - [Jenkins + Azure AKS の手順メモ](https://github.com/Takakiriy/azure-voting-app-redis/blob/master/steps.yaml)
 
 手順メモはチュートリアルに書かれていない情報を補足します。
 また、チェックリストとしても使える一覧性のある資料です。

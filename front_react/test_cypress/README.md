@@ -1,34 +1,27 @@
-﻿Character Encoding: "WHITE SQUARE" U+25A1 is □.
+[ English | [Japanese](README-jp.md) ]
 
-[ [英語](README.md) | 日本語 ]
+## How to install (Windows)
 
-## インストール方法 (Windows)
-
-1. Git bash をインストールします。
-    - https://git-scm.com/downloads
-	- ダウンロードするインストーラーのファイル名の例： `Git-2.27.0-64-bit.exe`
-	- bash のインストールは必須です。 それ以外の設定は任意です
-2. Node.js のパッケージを ダウンロード フォルダー `${USERPROFILE}\Downloads` の直下に配置します。
+1. Install Git bash.
+	- https://git-scm.com/downloads
+	- Example of downloading installer file name: `Git-2.27.0-64-bit.exe`
+	- bash must be installed. Other settings are optional
+2. Place Node.js package under `${USERPROFILE}\Downloads` folder.
 	- https://nodejs.org/ja/download/
-	- ダウンロードするインストーラーのファイル名の例： `node-v12.18.3-x64.msi`
-	- Node.js のバージョンは、後で実行する シェル スクリプト の中の `g_Node_js_Version` 変数の値です
-3. `cypress.env.js` ファイルを作成します。`cypress.example.env.js` を参考。
-	- `LogInToken` はログインのトークンがある場所。 値は、`"InCookie"` または `"InLocalStorage"`
-		- aws Amplify 環境なら、Amplify.configure に渡す引数の Auth/cookieStorage の有無に合わせます
-	- `LogInAccount` と `LogInPassword` にはサインアップしたアカウントを設定してください
-4. bash を開いて、シェル スクリプト を実行します。
-	- 拡張子が .sh のファイルが シェル スクリプト です
-	- フォルダーを右クリックして **Git Bash Here** を選ぶと bash が起動します
-	- `./scripts.sh  setup` (Enter) と入力すると cypress をインストールして開く シェル スクリプト を実行します
-	- `./scripts.sh  clean` (Enter) と入力すると、クリーンする シェル スクリプト を実行します
-	- `run_*.bat` ファイルをダブルクリックして実行することもできます
-5. FileStamp を認証しないモードにします。
-	- https://portal.azure.com/ >> App Service >> （フロント エンドのアプリ名） >> 認証/承認
-		>> 要求が認証されていない場合に実行するアクション >> 匿名要求を許可する
-	- バックエンドも同じ設定にします
-6. `cypress/integration` に テスト スクリプトがあります。
-	- `1_typical_test.js`: 典型的なケースのテスト
-7. FileStamp を認証するモードに戻します。
-	- https://portal.azure.com/ >> App Service >> （フロント エンドのアプリ名） >> 認証/承認
-		>> 要求が認証されていない場合に実行するアクション >> Azure Active Directory でのログイン
-	- バックエンドも同じ設定にします
+	- Example of downloading installer file name: `node-v12.18.3-x64.msi`
+	- The version of Node.js is the value of the `g_Node_js_Version` variable
+		in the shell script to be executed later
+3. Make `cypress.env.js` file. Refer to `cypress.example.env.js` file.
+	- `LogInToken` is where the log-in token is located. The value is `"InCookie"` or `"InLocalStorage"`
+		- In aws Amplify environment, match the presence or absence of `Auth/cookieStorage` in the argument to pass to `Amplify.configure`
+	- `LogInAccount` and `LogInPassword` are the account and the password you signed up
+4. Open bash and run the shell script.
+	- Shell script file has .sh extension
+	- To launch bash, right-click on a folder and select **Git Bash Here**
+	- Type `./scripts.sh  setup` (Enter) to run the shell script to install and open cypress
+	- Type `./scripts.sh  clean` (Enter) to run the shell script to clean
+	- You can also double-click `run_*.bat` file to run them
+5. There is a test script in the `cypress/integration`.
+	- `0_visit.js`: Open a specific URL
+	- `1_make_log-in_token.js`: Save the token in the log-in state to a file
+	- `2_log-in_test.js`: Run a simple automated test using log-in token file
