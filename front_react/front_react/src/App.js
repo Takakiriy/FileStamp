@@ -46,7 +46,7 @@ class  App extends React.Component {
     this.state = {
       html: "",
       userSettingVisible: false,
-      userMailAddress: (queryParameters.has("mail") ? queryParameters.get("mail") : "taro-suzuki@example.com"),
+      userMailAddress: (queryParameters.has("mail") ? queryParameters.get("mail") : "unknown@example.com"),
       testMessage: "",
       isTestMode: (queryParameters.has("mail") && queryParameters.get("mail").endsWith("@example.com")),
     };
@@ -56,7 +56,10 @@ class  App extends React.Component {
 
   componentDidMount() {
     REST_API.getToken()
-    .then( () => {
+    .then( (data) => {
+      const authenticatedMailAddress = data[0].user_id;
+      this.setState({userMailAddress: authenticatedMailAddress});
+      MyContextValue.userMailAddress = authenticatedMailAddress;
     })
     .catch( (err) => {
       this.setState({testMessage: String(err)});

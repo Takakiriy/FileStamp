@@ -55,7 +55,7 @@ class  FileArea extends React.Component {
         const  selectedFileContents = this.reader.result;
         const  hashCalculator = crypto.createHash( this.hashFunction );
         hashCalculator.update(new Buffer.from(selectedFileContents));
-        const  fileHash_ = hashCalculator.digest('hex');
+        const  fileHash = hashCalculator.digest('hex');
 
         this.setState({
           fileName: selectedFile.name,

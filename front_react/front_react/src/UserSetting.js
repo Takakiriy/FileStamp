@@ -17,7 +17,19 @@ class  UserSetting extends React.Component {
               <p>
               メールアドレス:<br/>
               <input type="text" disabled value={this.props.mailAddress}/>
-              </p><p>
+              </p>
+              <br/>
+              <p >
+                <a href="/.auth/logout?post_logout_redirect_uri=/">サイン アウト</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+/*
+              <p>
               名前:<br/>
               <input type="text" disabled value={this.state.name}
                 onChange={(event) => this.setState({name: event.target.value})}/>
@@ -30,16 +42,7 @@ class  UserSetting extends React.Component {
               <input type="text" value={this.state.supplement}
                 onChange={(event) => this.setState({supplement: event.target.value})}/>
               </p>
-              <br/>
-              <p >
-                <a href="/.auth/logout?post_logout_redirect_uri=/">サイン アウト</a>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+*/
 
   constructor() {
     super();
