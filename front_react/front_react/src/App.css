@@ -51,6 +51,11 @@ p.guide {
   font-size: 0.8rem;
 }
 
+.error-message {
+  font-size: 1rem;
+  color: red;
+}
+
 p.App-hash-value {
   font-size: 0.8rem;
   color: gray;
@@ -60,8 +65,17 @@ input.file-selector {
   font-size: 1.5rem;
 }
 
-span.signed-user {
+span.signer {
   color: red;
+}
+
+span.signed-date {
+  color: red;
+  font-size: 0.9rem;
+}
+
+.strikethrough-line {
+  text-decoration: line-through;
 }
 
 select.dropdown {

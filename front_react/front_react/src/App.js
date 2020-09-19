@@ -22,11 +22,9 @@ class  App extends React.Component {
           <br/>
           <div className="footer">
             <p>
-              Simple File Stamp version 0.06a
+              Simple File Stamp<br/><span className="font-size-small"> version 0.07（開発中）</span>
             </p>
           </div>
-            <button onClick={this.handleTestAPI.bind(this)} data-test="test">TestAPI</button><br/>
-            {this.state.testMessage}
           <UserSetting
             visible={this.state.userSettingVisible}
             onClosing={this.handleUserSettingClosing.bind(this)}
@@ -35,6 +33,8 @@ class  App extends React.Component {
       </MyContext.Provider>
     );
 /*
+            <button onClick={this.handleTestAPI.bind(this)} data-test="test">TestAPI</button><br/>
+            {this.state.testMessage}
 */
   }
   static contextType = MyContext;

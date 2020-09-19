@@ -142,7 +142,7 @@ namespace Functions.Tests
             response = (OkObjectResult)await Signature.OnHttpPost(
                 TestFactory.CreateHttpRequest(
                     new Dictionary<string, StringValues>{
-                        { "method", new StringValues("put") },  // Å‰‚É delete ‚Í‚Å‚«‚È‚¢‚½‚ß
+                        { "method", new StringValues("put") },  // æœ€åˆã« delete ã¯ã§ããªã„ãŸã‚
                     },
                     "{\"fileHash\": \""+ fileHashA +"\"}"
                 ),

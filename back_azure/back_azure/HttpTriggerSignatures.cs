@@ -191,7 +191,7 @@ namespace Company.Function
             if (data != null) {
                 return  JsonConvert.SerializeObject(data);
             } else {
-                return  "";
+                return  "{\"id\":\""+ fileHash +"\", \"Signatures\":[]}";
             }
         }
 

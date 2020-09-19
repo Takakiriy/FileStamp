@@ -68,7 +68,7 @@ class  ConfirmationToSign extends React.Component {
 
     await REST_API.putFileHashSignatures(this.props.fileHash)
     .then( (result) => {
-      this.setState({message: "署名しました。" + result});
+      this.setState({message: "署名しました。"});
       this.props.onSigned();
     })
     .catch( (err) => {
@@ -86,7 +86,7 @@ class  ConfirmationToSign extends React.Component {
  
     await REST_API.deleteFileHashSignatures(this.props.fileHash)
     .then( (result) => {
-      this.setState({message: "取り消しました。" + result});
+      this.setState({message: "取り消しました。"});
       this.props.onRemovedSignature();
     }).catch( (err) => {
       this.setState({message: String(err)});
@@ -116,7 +116,7 @@ class  ConfirmationToSign extends React.Component {
     if (this.operation === "add") {
       return "署名";
     } else if (this.operation === "remove") {
-      return "削除";
+      return "取り消し";
     } else {
       return ""
     }

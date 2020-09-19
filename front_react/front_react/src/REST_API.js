@@ -56,6 +56,14 @@ class  REST_APIClass {
     })
   }
 
+  async getFileHashSignatures(fileHash) {
+    return this.axios.post('/api/signatures?method=get' + this.testQueryParameter,
+      {fileHash}, this.defaultAxiosOptions)
+    .then( (response) => {
+      return response.data;
+    })
+  }
+
   async deleteFileHashSignatures(fileHash) {
     return this.axios.post('/api/signatures?method=delete' + this.testQueryParameter,
       {fileHash}, this.defaultAxiosOptions)
