@@ -34,6 +34,9 @@ https://sagep-app-service-v004.azurewebsites.net
 **注意** 現在、招待を受けることで、お試しいただくことはできますが、アカウント関連で脆弱性が存在します。
 捨てアカウントでお試しください。 
 
+動作の様子を YouTube にアップしました。
+[→ Simple File Stamp のデモ動画](https://youtu.be/HHhk-J-gMBs)
+
 File Stamp を使うには、Microsoft アカウントが必要です。
 アカウントの作成は、
 [Microsoft のホームページ](https://account.microsoft.com/account)
