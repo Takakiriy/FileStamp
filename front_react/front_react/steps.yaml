@@ -170,7 +170,7 @@ Azure の ACR に Docker イメージを登録する:
 （初回のみ）CORS設定:
     Azure portal >> App Service から CORS を設定
 
-Web App for Containers での継続的デプロイ（まだ調整中です）:
+Web App for Containers での継続的デプロイ:
     参考: https://docs.microsoft.com/ja-jp/azure/app-service/deploy-ci-cd-custom-container
     （初回のみ）:
         継続的デプロイを有効にする:
@@ -214,3 +214,10 @@ Azure 上の Web アプリケーションを開く:
     - ブラウザーを一度終了する  #// 終了しないと認証エラーになる可能性があります
     - https://sagep-app-service-v004.azurewebsites.net
     - ブラウザーをリロードする  #// リロードしないと一部が古いままになる可能性があります
+
+ローカルの Web アプリケーションを開く:
+    - 「バックエンドを実行するのに認証が必要になるように設定」の解除を行う
+    - ブラウザーを一度終了する  #// 終了しないと認証エラーになる可能性があります
+    - http://localhost:3000?mail=a@example.com  #// クエリー パラメーターには @example.com のメールアドレス
+    - ブラウザーをリロードする  #// リロードしないと一部が古いままになる可能性があります
+    - 「バックエンドを実行するのに認証が必要になるように設定」を行う（戻す）

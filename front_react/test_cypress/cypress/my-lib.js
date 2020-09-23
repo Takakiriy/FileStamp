@@ -22,7 +22,7 @@ export function  getLocalStorage() {
 }
 
 // recursiveAssign is nested Object.assign
-export function recursiveAssign(a, b) {
+export function  recursiveAssign(a, b) {
 	const bIsObject = (Object(b) === b);
 	if (!bIsObject) {
 		return b;
@@ -41,4 +41,3 @@ export function recursiveAssign(a, b) {
 	}
 	return a;
 }
-

@@ -11,7 +11,7 @@ class  App extends React.Component {
     return (
       <MyContext.Provider  value={MyContextValue}>
         <div className="App">
-          <div className="header-menu" onClick={this.handleUserSetting.bind(this)}>
+          <div className="header-menu" data-test="user-info" onClick={this.handleUserSetting.bind(this)}>
             {this.getTestModeView()}ユーザー情報</div>
           <br/>
           <div className="main">
@@ -22,7 +22,7 @@ class  App extends React.Component {
           <br/>
           <div className="footer">
             <p>
-              Simple File Stamp<br/><span className="font-size-small"> version 0.07（開発中）</span>
+              Simple File Stamp<br/><span className="font-size-small"> version 0.08（開発中）</span>
             </p>
           </div>
           <UserSetting

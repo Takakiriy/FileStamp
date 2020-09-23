@@ -105,21 +105,11 @@ class  FileArea extends React.Component {
     const now = new Date();
     const newSignature = {
       Signer: this.props.signerMailAddress,
-      Date: this.formatDateString(now),
+      Date: this.formatDateStringUTC(now),
       IsDeleted: false,
     }
 
     newSignatures[this.props.signerMailAddress] = newSignature;
-
-    this.setState({
-      signatures: newSignatures,
-    });
-  }
-
-  handleRemovedSignature() {
-    const newSignatures = Object.assign({}, this.state.signatures);
-
-    newSignatures[this.props.signerMailAddress].IsDeleted = true;
 
     this.setState({
       signatures: newSignatures,
@@ -133,6 +123,18 @@ class  FileArea extends React.Component {
   handleDeleteSignature() {
     this.refConfirmationToSign.current.reset("remove");
     this.setState({confirmationMode: true});
+  }
+
+  handleRemovedSignature() {
+    const newSignatures = Object.assign({}, this.state.signatures);
+    const now = new Date();
+
+    newSignatures[this.props.signerMailAddress].IsDeleted = true;
+    newSignatures[this.props.signerMailAddress].Date = this.formatDateStringUTC(now);
+
+    this.setState({
+      signatures: newSignatures,
+    });
   }
 
   readAsArrayBuffer(file, callbackFunction) {
@@ -219,8 +221,8 @@ class  FileArea extends React.Component {
     return this.formatDate(date, 'YYYY年 M月 D日 hh:mm');
   }
 
-  formatDateString( date ) {
-    return this.formatDate(date, 'YYYY-MM-DD hh:mm:ss');
+  formatDateStringUTC( date ) {
+    return this.formatDateUTC(date, 'YYYY-MM-DD hh:mm:ss');
   }
 
   formatDate( date, format ) {
@@ -242,6 +244,28 @@ class  FileArea extends React.Component {
     format = format.replace(/h/,  date.getHours());
     format = format.replace(/mm/, ('0' + date.getMinutes()).slice(-2));
     format = format.replace(/ss/, ('0' + date.getSeconds()).slice(-2));
+    return format;
+  }
+
+  formatDateUTC( date, format ) {
+    const weekday = ['日', '月', '火', '水', '木', '金', '土'];
+    if (!format) {
+        format = 'YYYY/MM/DD(WW) hh:mm:ss';
+    }
+    if (typeof date === 'string') {
+      date = new Date(date + 'Z');
+    }
+
+    format = format.replace(/YYYY/, date.getUTCFullYear().toString() );
+    format = format.replace(/MM/, ('0' + (date.getUTCMonth() + 1)).slice(-2));
+    format = format.replace(/DD/, ('0' + date.getUTCDate()).slice(-2));
+    format = format.replace(/M/, date.getUTCMonth() + 1);
+    format = format.replace(/D/, date.getUTCDate());
+    format = format.replace(/WW/, weekday[date.getUTCDay()]);
+    format = format.replace(/hh/, ('0' + date.getUTCHours()).slice(-2));
+    format = format.replace(/h/,  date.getUTCHours());
+    format = format.replace(/mm/, ('0' + date.getUTCMinutes()).slice(-2));
+    format = format.replace(/ss/, ('0' + date.getUTCSeconds()).slice(-2));
     return format;
   }
 }

@@ -263,6 +263,24 @@ function  parseArrayCode(arrayCode) {
 	}
 }
 
+// isAboutTheSameTimeInJapanese
+// Example: const now = new Date();  cmd.isAboutTheSameTimeInJapanese( cy.get('[data-test=date-0]'), now, 5 )
+export function  isAboutTheSameTimeInJapanese( target, minExpectedTimeDate, secondError ) {
+	const  localFormat = 'YYYY年 MM月 DD日 kk:mm';
+	let    minDate = Cypress.moment(minExpectedTimeDate)
+	minDate = Cypress.moment(minDate.format(localFormat), localFormat) // Cut seconds
+	const  maxDate = Cypress.moment(minDate).add( secondError, 'seconds')
+	target.should( (element) => {
+		const  targetString = element.text().trim()
+		const  targetDate = Cypress.moment( targetString, localFormat )
+
+		expect(
+			targetDate.isBetween( minDate, maxDate, undefined, '[]' ),
+			`${targetDate.format()} should be between ${minDate.format()} and ${maxDate.format()}`
+			).to.be.true
+	})
+}
+
 // uploadFile
 // Example: cmd.uploadFile( cy.get('#input-file'), 'README.txt')
 export function  uploadFile(target, fileName, fileType) {
