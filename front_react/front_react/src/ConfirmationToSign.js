@@ -11,17 +11,17 @@ class  ConfirmationToSign extends React.Component {
         <div className="modal-mask">
           <div className="vertical-align-middle" onClick={this.handleClose.bind(this)}>
             <div className="modal-window" onClick={this.handleDefalut.bind(this)}>
-              <div className="text-align-right">
-                <button onClick={this.handleClose.bind(this)} data-test="cancel">Ⅹ</button>
-              </div>
-              <p data-test="guide">
-                {this.state.message}
-              </p>
-              { this.state.signButtonVisible &&
-                <p className="text-align-center">
-                  <button onClick={this.handleDoButton.bind(this)} data-test="ok">{this.getDoButtonName()}</button>
+              <button style={{float: "right", fontSize: 'small'}} onClick={this.handleClose.bind(this)} data-test="cancel">Ⅹ</button>
+              <div className="client-in-modal-window">
+                <p data-test="guide">
+                  {this.state.message}
                 </p>
-              }
+                { this.state.signButtonVisible &&
+                  <p className="text-align-center">
+                    <button onClick={this.handleDoButton.bind(this)} data-test="ok">{this.getDoButtonName()}</button>
+                  </p>
+                }
+              </div>
             </div>
           </div>
         </div>

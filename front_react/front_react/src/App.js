@@ -21,9 +21,10 @@ class  App extends React.Component {
           </div>
           <br/>
           <div className="footer">
-            <p>
-              Simple File Stamp<br/><span className="font-size-small"> version 0.08（開発中）</span>
-            </p>
+            <h3>
+              Simple File Stamp
+            </h3>
+            <small> version 0.09（開発中）</small>
           </div>
           <UserSetting
             visible={this.state.userSettingVisible}

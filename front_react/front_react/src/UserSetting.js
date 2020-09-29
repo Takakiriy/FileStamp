@@ -9,19 +9,15 @@ class  UserSetting extends React.Component {
         <div className="modal-mask  text-align-right">
           <div className="vertical-align-middle  vertical-align-top" onClick={this.handleClose.bind(this)}>
             <div className="modal-window modal-window-user-setting" onClick={this.handleDefalut.bind(this)}>
-              <div className="right-align">
-                <button onClick={this.handleOK.bind(this)} data-test="close-user-info">
-                  Ⅹ
-                </button>
-              </div>
-              <p>
-              メールアドレス:<br/>
-              <input type="text" disabled value={this.props.mailAddress} data-test="user-mail-address"/>
-              </p>
-              <br/>
-              <p >
+              <button style={{float: "right"}} onClick={this.handleOK.bind(this)} data-test="close-user-info">
+                Ⅹ
+              </button>
+              <div className="client-in-modal-window">
+                メールアドレス:<br/>
+                <input type="text" disabled value={this.props.mailAddress} data-test="user-mail-address" size="30"/>
+                <br/><br/>
                 <a href="/.auth/logout?post_logout_redirect_uri=/">サイン アウト</a>
-              </p>
+              </div>
             </div>
           </div>
         </div>

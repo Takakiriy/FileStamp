@@ -3,22 +3,37 @@ import './App.css';
 import ConfirmationToSign from './ConfirmationToSign';
 import crypto from  "crypto";
 import REST_API from './REST_API';
+import { MyContextValue } from './MyContext';
 
 class  FileArea extends React.Component {
   render() {
     return (
-      <span>
-        <p className="App-file-area">
-          <input className="file-selector" type="file" onChange={this.handleSelectingFileChanged.bind(this)} 
-            data-test="file-selector" disabled={this.state.busyMode}/>
-          &nbsp;
-          <button onClick={this.handleSign.bind(this)} disabled={this.getSignDisabled()} data-test="sign">署名する</button>
-        </p>
-        <p className="App-hash-value">
-          {this.getFileHashView()}&nbsp;
-        </p>
-        {this.getSignaturesView()}
-        {this.getGuideView()}
+      <div className="container">
+        <div className="row">
+          <div className="col-1 col-md-0  order-1 order-md-4"></div>
+          <div style={{paddingTop: '20px'}} className="col-12 col-md-8  order-2 order-md-1">
+            <input type="file" onChange={this.handleSelectingFileChanged.bind(this)}
+              data-test="file-selector" disabled={this.state.busyMode}/>
+          </div>
+          <div className="col-1 col-md-0  order-3 order-md-5"></div>
+          <div className="col-12  order-4 order-md-3" style={{color: 'grey'}}>
+            <small>{this.getFileHashView()}&nbsp;</small>
+          </div>
+          <div style={{paddingTop: '20px'}} className="col-12 col-md-4  order-5 order-md-2">
+            <button onClick={this.handleSign.bind(this)} disabled={this.getSignDisabled()} data-test="sign">署名する</button>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12" style={{paddingTop: '20px'}}>
+            {this.getSignaturesView()}
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12">
+            {this.getGuideView()}
+          </div>
+        </div>
+        <div id="log"/>
         <ConfirmationToSign
           fileName={this.state.fileName}
           signerMailAddress={this.props.signerMailAddress}
@@ -28,7 +43,7 @@ class  FileArea extends React.Component {
           onSigned={this.handleSigned.bind(this)}
           onRemovedSignature={this.handleRemovedSignature.bind(this)}
           onClosing={this.handleConfirmationClosing.bind(this)}/>
-      </span>
+      </div>
     );
   }
 
@@ -76,8 +91,28 @@ class  FileArea extends React.Component {
           });
         })
         .catch( (err) => {
+          let signatures = {};
+          if (MyContextValue.isTestMode) {
+            const now = new Date();
+            signatures['this-is-not-in-server1@example.com'] = {
+              Signer: 'this-is-not-in-server1@example.com',
+              Date: this.formatDateStringUTC(now),
+              IsDeleted: false,
+            }
+            signatures[MyContextValue.userMailAddress] = {
+              Signer: MyContextValue.userMailAddress,
+              Date: this.formatDateStringUTC(now),
+              IsDeleted: false,
+            }
+            signatures['this-is-not-in-server2@example.com'] = {
+              Signer: 'this-is-not-in-server2@example.com',
+              Date: this.formatDateStringUTC(now),
+              IsDeleted: true,
+            }
+          }
           this.setState({
             errorMessage: String(err),
+            signatures,
           });
         })
         .finally( () => {
@@ -103,6 +138,7 @@ class  FileArea extends React.Component {
   handleSigned() {
     const newSignatures = Object.assign({}, this.state.signatures);
     const now = new Date();
+
     const newSignature = {
       Signer: this.props.signerMailAddress,
       Date: this.formatDateStringUTC(now),
@@ -167,52 +203,54 @@ class  FileArea extends React.Component {
       return null;
     } else {
       return (
-        <span>
-          <span className="font-size-small" data-test="signed-user-list">署名済ユーザー</span><br/>
+        <div>
+        <div data-test="signed-user-list"><small>署名済ユーザー</small></div>
           {
             (Object.values(this.state.signatures).length === 0)
             ? "未署名"
             : Object.values(this.state.signatures).map((signature, i) => {
               let deleteButton = null;
               if (this.props.signerMailAddress === signature.Signer) {
-                deleteButton = <button onClick={this.handleDeleteSignature.bind(this)}
-                  data-test="delete-signature" disabled={signature.IsDeleted}>取り消し</button>;
+                deleteButton = <span><button onClick={this.handleDeleteSignature.bind(this)}
+                  data-test="delete-signature" disabled={signature.IsDeleted}>取り消し</button>
+                  <span className="d-inline  d-md-none"><br/></span></span>;
               }
               let strikethroughLine = "";
               if (signature.IsDeleted) {
                 strikethroughLine = " strikethrough-line";
               }
 
-              return (<span key={i}>
-                <span className={"signer" + strikethroughLine} data-test={'signer-' + i}>
+              return (<div className="container" key={i}>
+                <div className={"d-md-inline  signer" + strikethroughLine} data-test={'signer-' + i}>
                   {signature.Signer}
-                </span>
-                &nbsp;
-                <span className={"signed-date" + strikethroughLine} data-test={'date-' + i}>
+                </div>
+                <span className="d-none  d-md-inline">&nbsp; - &nbsp;</span>
+                <div className={"d-md-inline  small  signed-date" + strikethroughLine} data-test={'date-' + i}>
                   {this.formatJapaneseDate(signature.Date+'Z')}
-                </span>
-                &nbsp;
-                {deleteButton}<br/>
-              </span>);
+                </div>
+                <span className="d-none  d-md-inline">&nbsp;</span>
+                {deleteButton}
+                <span className="d-inline  d-md-none"><br/></span>
+              </div>);
             }).reverse()
           }
-        </span>
+        </div>
       );
     }
   }
 
   getGuideView() {
     if (this.state.busyMode) {
-      return <p className="guide">問い合わせ中…</p>;
+      return <small>問い合わせ中…</small>;
     } else if (this.state.errorMessage) {
       return <p className="error-message">{this.state.errorMessage}</p>;
     } else {
       return ( this.state.fileName !== '' ? null :
-        <p className="guide">
+        <small>
         「ファイルの選択」ボタンを押してファイルを選ぶか、<br/>
         「ファイルの選択」ボタンの上にファイルをドラッグ＆ドロップすると、<br/>
         現在の署名の状況が表示されます。
-        </p>
+        </small>
       );
     }
   }
@@ -231,7 +269,7 @@ class  FileArea extends React.Component {
         format = 'YYYY/MM/DD(WW) hh:mm:ss';
     }
     if (typeof date === 'string') {
-      date = new Date(date);
+      date = this.new_Date(date);
     }
 
     format = format.replace(/YYYY/, date.getFullYear().toString() );
@@ -253,7 +291,7 @@ class  FileArea extends React.Component {
         format = 'YYYY/MM/DD(WW) hh:mm:ss';
     }
     if (typeof date === 'string') {
-      date = new Date(date + 'Z');
+      date = this.new_Date(date + 'Z');
     }
 
     format = format.replace(/YYYY/, date.getUTCFullYear().toString() );
@@ -267,6 +305,15 @@ class  FileArea extends React.Component {
     format = format.replace(/mm/, ('0' + date.getUTCMinutes()).slice(-2));
     format = format.replace(/ss/, ('0' + date.getUTCSeconds()).slice(-2));
     return format;
+  }
+
+  new_Date( date ) {
+    if (typeof date === 'string') {
+      return new Date(date.replace(' ', 'T'));
+      // from "2019-01-01 12:00" to "2019-01-01T12:00" for Safari only
+    } else {
+      return new Date(date);
+    }
   }
 }
 export default FileArea;
