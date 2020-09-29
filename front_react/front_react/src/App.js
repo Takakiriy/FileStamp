@@ -42,13 +42,14 @@ class  App extends React.Component {
   constructor() {
     super();
     const queryParameters = new URLSearchParams(window.location.search);
+    const isExampleComUser = (queryParameters.has("mail") && queryParameters.get("mail").endsWith("@example.com"));
 
     this.state = {
       html: "",
       userSettingVisible: false,
       userMailAddress: (queryParameters.has("mail") ? queryParameters.get("mail") : "unknown@example.com"),
       testMessage: "",
-      isTestMode: (queryParameters.has("mail") && queryParameters.get("mail").endsWith("@example.com")),
+      isTestMode: isExampleComUser || window.location.hostname === 'localhost',
     };
     MyContextValue.isTestMode = this.state.isTestMode;
     MyContextValue.userMailAddress = this.state.userMailAddress;
