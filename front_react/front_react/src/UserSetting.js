@@ -4,20 +4,20 @@ import './Modal.css';
 class  UserSetting extends React.Component {
   render() {
     return (
-      ! this.props.visible ? null :
-      <div name="modal">
-        <div className="modal-mask  text-align-right">
-          <div className="vertical-align-middle  vertical-align-top" onClick={this.handleClose.bind(this)}>
-            <div className="modal-window modal-window-user-setting" onClick={this.handleDefalut.bind(this)}>
-              <button style={{float: "right"}} onClick={this.handleOK.bind(this)} data-test="close-user-info">
-                Ⅹ
+      <div className="modal fade" id="modal1" tabIndex="-1" role="dialog" aria-labelledby="modal1-title" aria-hidden="true">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="modal1-title">ユーザー情報</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true" data-test="close-user-info">&times;</span>
               </button>
-              <div className="client-in-modal-window">
-                メールアドレス:<br/>
+            </div>
+            <div className="modal-body">
+              メールアドレス:<br/>
                 <input type="text" disabled value={this.props.mailAddress} data-test="user-mail-address" size="30"/>
                 <br/><br/>
                 <a href="/.auth/logout?post_logout_redirect_uri=/">サイン アウト</a>
-              </div>
             </div>
           </div>
         </div>
@@ -47,19 +47,6 @@ class  UserSetting extends React.Component {
       createDate: "2020-09-12",
       supplement: "",
     };
-  }
-
-  handleOK() {
-    this.close();
-  }
-
-  handleClose(event) {
-    if (event.currentTarget !== event.target) { return }
-    this.close();
-  }
-
-  close(event) {
-    this.props.onClosing();
   }
 
   handleDefalut(event) {

@@ -11,8 +11,9 @@ class  App extends React.Component {
     return (
       <MyContext.Provider  value={MyContextValue}>
         <div className="App">
-          <div className="header-menu" data-test="user-info" onClick={this.handleUserSetting.bind(this)}>
-            {this.getTestModeView()}ユーザー情報</div>
+          <div className="header-menu" data-test="user-info" data-toggle="modal" data-target="#modal1">
+            {this.getTestModeView()}ユーザー情報
+          </div>
           <br/>
           <div className="main">
             <img src={stamp} className="App-logo" alt="logo" />
@@ -24,17 +25,15 @@ class  App extends React.Component {
             <h3>
               Simple File Stamp
             </h3>
-            <small> version 0.09（開発中）</small>
+            <small> version 0.10（開発中）</small>
           </div>
           <UserSetting
-            visible={this.state.userSettingVisible}
-            onClosing={this.handleUserSettingClosing.bind(this)}
             mailAddress={this.state.userMailAddress}/>
         </div>
       </MyContext.Provider>
     );
 /*
-            <button onClick={this.handleTestAPI.bind(this)} data-test="test">TestAPI</button><br/>
+          <button onClick={this.handleTestAPI.bind(this)} data-test="test">TestAPI</button><br/>
             {this.state.testMessage}
 */
   }
@@ -47,7 +46,6 @@ class  App extends React.Component {
 
     this.state = {
       html: "",
-      userSettingVisible: false,
       userMailAddress: (queryParameters.has("mail") ? queryParameters.get("mail") : "unknown@example.com"),
       testMessage: "",
       isTestMode: isExampleComUser || window.location.hostname === 'localhost',
@@ -66,14 +64,6 @@ class  App extends React.Component {
     .catch( (err) => {
       this.setState({testMessage: String(err)});
     });
-  }
-
-  handleUserSetting() {
-    this.setState({userSettingVisible: true});
-  }
-
-  handleUserSettingClosing() {
-    this.setState({userSettingVisible: false});
   }
 
   async handleTestAPI() {

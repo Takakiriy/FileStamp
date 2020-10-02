@@ -6,22 +6,25 @@ import { MyContext } from './MyContext';
 class  ConfirmationToSign extends React.Component {
   render() {
     return (
-      ! this.props.visible ? null :
-      <div name="modal">
-        <div className="modal-mask">
-          <div className="vertical-align-middle" onClick={this.handleClose.bind(this)}>
-            <div className="modal-window" onClick={this.handleDefalut.bind(this)}>
-              <button style={{float: "right", fontSize: 'small'}} onClick={this.handleClose.bind(this)} data-test="cancel">Ⅹ</button>
-              <div className="client-in-modal-window">
-                <p data-test="guide">
-                  {this.state.message}
+      <div className="modal fade" id="sign-modal" ref={this.signModal} tabIndex="-1" role="dialog"
+           aria-labelledby="sign-modal-title" aria-hidden="true">
+        <div className="modal-dialog  modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="sign-modal-title">電子署名</h5>
+              <button type="button" className="close" ref={this.closeButton} data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true" data-test="close-confirmation">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <p data-test="guide">
+                {this.state.message}
+              </p>
+              { this.state.signButtonVisible &&
+                <p className="text-align-center">
+                  <button onClick={this.handleDoButton.bind(this)} data-test="ok">{this.getDoButtonName()}</button>
                 </p>
-                { this.state.signButtonVisible &&
-                  <p className="text-align-center">
-                    <button onClick={this.handleDoButton.bind(this)} data-test="ok">{this.getDoButtonName()}</button>
-                  </p>
-                }
-              </div>
+              }
             </div>
           </div>
         </div>
@@ -39,6 +42,14 @@ class  ConfirmationToSign extends React.Component {
     this.state = Object.assign({}, this.resetState);
     this.operation = undefined;
     this.closeEnabled = true;
+    this.signModal = React.createRef();
+    this.closeButton = React.createRef();
+  }
+
+  componentDidMount() {
+    window.$(this.signModal.current).on('hidden.bs.modal', () => {
+      this.reset();
+    });
   }
 
   reset(operation) {
@@ -63,7 +74,7 @@ class  ConfirmationToSign extends React.Component {
 
   async handleSign() {
     this.setState({message: "署名中……"});
-    this.closeEnabled = false;
+    this.lockClose();
     this.setState({signButtonVisible: false});
 
     await REST_API.putFileHashSignatures(this.props.fileHash)
@@ -75,15 +86,15 @@ class  ConfirmationToSign extends React.Component {
       this.setState({message: String(err)});
     })
     .finally( () => {
-      this.closeEnabled = true;
+      this.unlockClose();
     })
   }
 
   async handleRemoveSignature() {
     this.setState({message: "取り消し中……"});
-    this.closeEnabled = false;
+    this.lockClose();
     this.setState({signButtonVisible: false});
- 
+
     await REST_API.deleteFileHashSignatures(this.props.fileHash)
     .then( (result) => {
       this.setState({message: "取り消しました。"});
@@ -92,19 +103,20 @@ class  ConfirmationToSign extends React.Component {
       this.setState({message: String(err)});
     })
     .finally( () => {
-      this.closeEnabled = true;
+      this.unlockClose();
     })
   }
 
-  handleClose(event) {
-    if (event.currentTarget !== event.target) { return }
-    this.close();
+  lockClose() {
+    this.closeEnabled = false;
+    this.closeButton.current.classList.add('d-none');
+    window.$(this.signModal.current).modal('lock');
   }
 
-  close(event) {
-    if (!this.closeEnabled) {return;}
-    this.reset();
-    this.props.onClosing();
+  unlockClose() {
+    this.closeEnabled = true;
+    this.closeButton.current.classList.remove('d-none');
+    window.$(this.signModal.current).modal('unlock');
   }
 
   handleDefalut(event) {

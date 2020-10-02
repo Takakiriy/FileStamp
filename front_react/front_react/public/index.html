@@ -25,11 +25,76 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/navbar-fixed-left.min.css"/>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
     <title>Simple File Stamp</title>
   </head>
-  <body>
+  <body data-spy="scroll" data-target=".navbar-nav" style="position: relative;">
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <nav class="navbar navbar-expand-md navbar-dark bg-secondary fixed-left">
+      <a class="navbar-brand" href>Simple File Stamp</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navivar-menu"
+              aria-controls="navivar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navivar-menu">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link btn-in-toggler" data-toggle="modal" data-target="#modal1">ユーザー情報</a>
+          <a class="nav-item nav-link btn-in-toggler" href="#root">署名アプリ</a>
+          <a class="nav-item nav-link btn-in-toggler" href="#manual">使い方</a>
+          <a class="nav-item nav-link btn-in-toggler" href="#support">サポート</a>
+        </div>
+      </div>
+    </nav>
+    <script>
+      // Hides navivar-menu
+      $('.btn-in-toggler').click(function(){
+        $('#navivar-menu').collapse('hide');
+      });
+
+      // Smooth scroll. It uses jQuery not slim version
+      $(function(){
+        $('a[href^="#"]').click(function(){
+          var speed = 500;
+          var href= $(this).attr("href");
+          var target = $(href == "#" || href == "" ? 'html' : href);
+          var position = target.offset().top;
+          $("html, body").animate({scrollTop:position}, speed, "swing");
+          return false;
+        });
+      });
+
+      // Extends an bootstrap method
+      // Example:
+      //    window.$(this.myModal.current).modal('lock');
+      //    window.$(this.myModal.current).modal('unlock');
+      {
+        var _superModal = $.fn.modal;
+
+        $.extend(_superModal.Constructor.Default, {
+          locked: false
+        });
+
+        var _hide = _superModal.Constructor.prototype.hide;
+
+        $.extend(_superModal.Constructor.prototype, {
+          lock: function () {
+            this._config.locked = true;
+          },
+          unlock: function () {
+            this._config.locked = false;
+          },
+          hide: function () {
+            if (this._config.locked) return;
+
+            _hide.apply(this, arguments);
+          }
+        });
+      }
+    </script>
+
+    <div id="root" style="margin-bottom: 3.7rem;"></div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -40,7 +105,128 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <script src="js/jquery-3.3.1.slim.min.js"></script>
-    <script src="js/bootstrap.bundle.min.js"></script>
+
+    <div class="container manual">
+      <h2><span id="manual" class="link-target">使い方</span></h2>
+
+      <h3>署名をする</h3>
+      <p>
+      File Stamp は、ファイルの内容に対して承認する印鑑を押すような電子署名を行います。
+      </p><p>
+      お使いの PC やスマートフォン（ローカル）にある承認しようとしているファイルを
+      File Stamp サービス内の「ファイルの選択」ボタンで指定し、
+      「署名する」ボタンを押すことで、
+      ファイルの内容に対して承認したことになります。
+      </p><p>
+      <img src="./document/select_a_file.png" alt="ファイルの選択" class="img-fluid"/>
+      </p><p>
+      電子署名に記録される署名者は、
+      署名ボタンを押したときにサインインしているアカウントに
+      紐づけられているメールアドレスによって識別されます。
+      同じメールアドレスが複数のアカウントに紐づけられることはできないため、
+      アカウントが乗っ取られない限り、なりすましは発生しません。
+      </p><p>
+      ファイルの内容は、ファイルのハッシュ値（SHA256）で識別されます。
+      ファイルの内容を一部でも変更するとハッシュ値が異なる値になるため、
+      別の書類に印鑑を写すようなことはできません。
+      </p><p>
+      署名日も記録されます。
+      </p><p>
+      電子署名は、クラウド上のデータベースに保存されます。
+      データベースに書き込む権限は File Stamp サービスのバックエンドだけなので、
+      File Stamp サービスのバックエンドが定義した処理以外の方法で
+      書き換えることはできません。
+      </p>
+
+      <h3>署名者の一覧</h3>
+      <p>
+      電子署名の内容を参照するには、
+      署名するときと同様に対象となるファイルを指定するだけです。
+      電子署名の内容は、ファイルの内容に対して署名した人のメールアドレスの一覧です。
+      電子署名を確認する対象となるファイルを持っている人だけが参照することができます。
+      </p><p>
+      <img src="./document/signed_users.png" alt="署名済ユーザー" class="img-fluid"/>
+      </p>
+
+      <h3>署名の取り消し</h3>
+      <p>
+      署名者は、承認する印鑑に二重線を付けるように、電子署名を取り消すことができます。
+      取り消したことはクラウドに保存されます。
+      一度でも署名したことがあることを削除することはできません。
+      </p><p>
+      取り消しの削除（再署名）をすることはできます。
+      </p><p>
+      署名日、署名の取り消し日、再署名日のいずれか最も新しい日付のみ記録されます。
+      </p>
+    </div>
+
+    <div class="container manual">
+      <h2><span id="support" class="link-target">サポート</span></h2>
+
+      <p>
+        何かご質問があれば、下記のフォームに内容を入力して「送信」ボタンを押してください。
+      </p>
+
+      <div class="form-group">
+        <label for="title1">タイトル</label>
+        <input type="text" class="form-control" id="title1" placeholder="タイトルを入力"/>
+      </div>
+      <div class="form-group">
+        <label for="name1">お名前</label>
+        <input type="text" class="form-control" id="name1" placeholder="貴方のお名前を入力"/>
+      </div>
+      <div class="form-group">
+        <label for="email1">返信先メールアドレス</label>
+        <input type="email" class="form-control" id="email1" aria-describedby="emailHelp" placeholder="貴方のメールアドレスを入力"/>
+      </div>
+      <div class="form-group">
+        <label for="textarea1">内容</label>
+        <textarea class="form-control" id="textarea1" rows="7" placeholder="ご質問の内容を入力"></textarea>
+      </div>
+      <button type="submit" class="btn btn-secondary">送信（調整中）</button>
+    </div>
+    <div style="margin: 2rem;"></div>
+
+    <footer class="footer page-footer">
+      <div class="container small">
+        <br/>
+        当サービスの電子署名の信ぴょう性やシステム構成に関しては
+        <a href="https://github.com/Takakiriy/FileStamp" target="_blank">GitHub</a>
+        にて詳しく説明しています。
+        <br/><br/>
+      </div>
+    </footer>
+
+    <style type="text/css">
+      .nav-link:hover {
+        cursor: pointer;
+      }
+      .manual h2 {
+        margin-top: 3rem;
+        padding-top: 0.5rem;
+        background: #eaf3ff;
+        border-bottom: 2px solid #2f51b4;
+      }
+      .link-target {
+        padding-top: 3.7rem;
+        margin-top: -3.7rem;
+      }
+      @media (min-width:768px) {
+        .link-target {
+          padding-top: 0;
+          margin-top:  0;
+        }
+      }
+      .manual h3 {
+        margin-top: 2rem;
+      }
+      .manual img {
+        display: block;
+        margin: 0px auto 0px; /* centering */
+      }
+      .page-footer {
+        background-color: lightgray;
+      }
+    </style>
   </body>
 </html>

@@ -28,6 +28,7 @@
 	- バックエンドも同じ設定にします
 6. `cypress/integration` に テスト スクリプトがあります。
 	- `1_typical_test.js`: 典型的なケースのテスト
+	- `cypress_fiddle_*.js`: デバッグ用、テストでは使わない
 7. FileStamp を認証するモードに戻します。
 	- https://portal.azure.com/ >> App Service >> （フロント エンドのアプリ名） >> 認証/承認
 		>> 要求が認証されていない場合に実行するアクション >> Azure Active Directory でのログイン

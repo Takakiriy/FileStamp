@@ -21,8 +21,9 @@ describe('Users', () => {
 
 			cmd.log('ユーザーのメールアドレスをチェックする')
 			cy.get('[data-test="user-info"]').click()
+			cmd.waitForAnimation('[data-test="user-mail-address"]')
 			cy.get('[data-test="user-mail-address"]').should('have.value', i.mailAddress)
-			cy.get('[data-test="close-user-info"]').click()
+			cmd.clickCloseModalButton('', '[data-test="close-user-info"]')
 
 
 			cmd.log('ファイルを選択する')
@@ -33,9 +34,10 @@ describe('Users', () => {
 
 			cmd.log('署名を追加する')
 			cy.get('button[data-test="sign"]').click()
+			cmd.waitForAnimation('button[data-test="ok"]')
 			cy.get('button[data-test="ok"]').click()
 			cy.get('p[data-test="guide"]', {timeout: 20000}).should('contains.text', '署名しました')
-			cy.get('button[data-test="cancel"]').click()
+			cmd.clickCloseModalButton('', '[data-test="close-confirmation"]')
 			cy.get(`[data-test="signer-${i.id}"]`).should('have.text', i.mailAddress)
 			cy.get(`[data-test="signer-${i.id}"]`).should('not.have.class', 'strikethrough-line')
 			let now = new Date()
@@ -44,9 +46,10 @@ describe('Users', () => {
 
 			cmd.log('署名を取り消す')
 			cy.get('button[data-test="delete-signature"]').click()
+			cmd.waitForAnimation('button[data-test="ok"]')
 			cy.get('button[data-test="ok"]').click()
 			cy.get('p[data-test="guide"]', {timeout: 20000}).should('contains.text', '取り消しました')
-			cy.get('button[data-test="cancel"]').click()
+			cmd.clickCloseModalButton('', '[data-test="close-confirmation"]')
 			cy.get(`[data-test="signer-${i.id}"]`).should('have.class', 'strikethrough-line')
 			cy.get(`[data-test="signer-${i.id}"]`).should('have.text', i.mailAddress)
 			now = new Date()

@@ -20,7 +20,8 @@ class  FileArea extends React.Component {
             <small>{this.getFileHashView()}&nbsp;</small>
           </div>
           <div style={{paddingTop: '20px'}} className="col-12 col-md-4  order-5 order-md-2">
-            <button onClick={this.handleSign.bind(this)} disabled={this.getSignDisabled()} data-test="sign">署名する</button>
+            <button onClick={this.handleSign.bind(this)} disabled={this.getSignDisabled()} data-test="sign"
+              data-toggle="modal" data-target="#sign-modal">署名する</button>
           </div>
         </div>
         <div className="row">
@@ -39,10 +40,8 @@ class  FileArea extends React.Component {
           signerMailAddress={this.props.signerMailAddress}
           fileHash={this.state.fileHash}
           ref={this.refConfirmationToSign}
-          visible={this.state.confirmationMode}
           onSigned={this.handleSigned.bind(this)}
-          onRemovedSignature={this.handleRemovedSignature.bind(this)}
-          onClosing={this.handleConfirmationClosing.bind(this)}/>
+          onRemovedSignature={this.handleRemovedSignature.bind(this)}/>
       </div>
     );
   }
@@ -102,7 +101,7 @@ class  FileArea extends React.Component {
             signatures[MyContextValue.userMailAddress] = {
               Signer: MyContextValue.userMailAddress,
               Date: this.formatDateStringUTC(now),
-              IsDeleted: false,
+              IsDeleted: true,
             }
             signatures['this-is-not-in-server2@example.com'] = {
               Signer: 'this-is-not-in-server2@example.com',
@@ -132,7 +131,6 @@ class  FileArea extends React.Component {
 
   handleSign() {
     this.refConfirmationToSign.current.reset("add");
-    this.setState({confirmationMode: true});
   }
 
   handleSigned() {
@@ -150,10 +148,6 @@ class  FileArea extends React.Component {
     this.setState({
       signatures: newSignatures,
     });
-  }
-
-  handleConfirmationClosing() {
-    this.setState({confirmationMode: false});
   }
 
   handleDeleteSignature() {
@@ -212,7 +206,8 @@ class  FileArea extends React.Component {
               let deleteButton = null;
               if (this.props.signerMailAddress === signature.Signer) {
                 deleteButton = <span><button onClick={this.handleDeleteSignature.bind(this)}
-                  data-test="delete-signature" disabled={signature.IsDeleted}>取り消し</button>
+                  data-test="delete-signature" disabled={signature.IsDeleted}
+                  data-toggle="modal" data-target="#sign-modal">取り消し</button>
                   <span className="d-inline  d-md-none"><br/></span></span>;
               }
               let strikethroughLine = "";
