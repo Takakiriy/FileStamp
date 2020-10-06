@@ -1,8 +1,10 @@
 ﻿import React from 'react';
 import stamp from './stamp.svg';
 import './App.css';
-import FileArea from './FileArea';
 import UserSetting from './UserSetting';
+import FileArea from './FileArea';
+import Manual from './Manual';
+import Support from './Support';
 import REST_API from './REST_API';
 import { MyContext, MyContextValue } from './MyContext';
 
@@ -11,7 +13,7 @@ class  App extends React.Component {
     return (
       <MyContext.Provider  value={MyContextValue}>
         <div className="App">
-          <div className="header-menu" data-test="user-info" data-toggle="modal" data-target="#modal1">
+          <div className="header-menu" data-test="user-info" data-toggle="modal" data-target="#user-modal">
             {this.getTestModeView()}ユーザー情報
           </div>
           <br/>
@@ -25,11 +27,13 @@ class  App extends React.Component {
             <h3>
               Simple File Stamp
             </h3>
-            <small> version 0.10（開発中）</small>
+            <small> version 0.11（開発中）</small>
           </div>
           <UserSetting
             mailAddress={this.state.userMailAddress}/>
         </div>
+        <Manual/>
+        <Support/>
       </MyContext.Provider>
     );
 /*
