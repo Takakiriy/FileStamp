@@ -20,7 +20,7 @@ namespace Company.Function
         public const string ExampleCosmosDBContainerID = "StampContainer";
         public const string CosmosDBContainerID = "Signature";
     }
-        
+
     public static class Signature
     {
         [FunctionName("Signatures_POST")]

@@ -9,7 +9,7 @@
         "type": "coreclr",
         "request": "launch",
         "preLaunchTask": "build",
-        "program": "${workspaceFolder}/test_xUnit/bin/Debug/netcoreapp2.1/test_xUnit.dll",
+        "program": "${workspaceFolder}/test_xUnit/bin/Debug/netcoreapp3.1/test_xUnit.dll",
         "args": [],
         "cwd": "${workspaceFolder}/test_xUnit",
         "console": "internalConsole",

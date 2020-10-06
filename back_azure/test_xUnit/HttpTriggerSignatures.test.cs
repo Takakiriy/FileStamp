@@ -1,4 +1,5 @@
 using System;
+using io = System.IO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -231,6 +232,24 @@ namespace Functions.Tests
             AssertEqual(exception, true);
         }
 
+        [Fact]
+        public async void TestOfPutToMailForm()
+        {
+            await LoadApplicationSettings();
+
+            var response = (OkObjectResult)await MailForm.OnHttpPost(
+                TestFactory.CreateHttpRequest(
+                    new Dictionary<string, StringValues>{},
+                    "{" +
+                        "\"mailTitle\": \"TestOfPutToMailForm のテスト\"," +
+                        "\"mailName\": \"鈴木 太郎\"," +
+                        "\"mailAddress\": \"taro.suzuki@example.com\"," +
+                        "\"mailContents\": \"高橋様\nお世話になっております。\"" +
+                    "}"
+                ),
+                logger);
+        }
+
         // logger
         private static readonly ILogger logger = TestFactory.CreateLogger(LoggerTypes.List);
 
@@ -354,6 +373,20 @@ namespace Functions.Tests
             Assert.True(expected >= actual);
             TimeSpan  diff = expected - actual;
             Assert.True(diff.TotalMinutes <= 1);
+        }
+
+        // LoadApplicationSettings()
+        public static async Task  LoadApplicationSettings()
+        {
+            string requestBody = await new io::StreamReader("local.settings.json").ReadToEndAsync();
+            dynamic data = JsonConvert.DeserializeObject(requestBody);
+            foreach (var property in data.Values) {
+                foreach (var valueD in property) {
+                    string key = property.Name;
+                    string value = valueD.Value;
+                    Environment.SetEnvironmentVariable(key, value);
+                }
+            }
         }
     }
 }

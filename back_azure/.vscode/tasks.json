@@ -25,7 +25,7 @@
             "type": "process",
             "problemMatcher": "$msCompile",
             "options": {
-                "cwd": "${workspaceFolder}/back-azure"
+                "cwd": "${workspaceFolder}/back_azure"
             }
         },
         {
@@ -44,7 +44,7 @@
             },
             "problemMatcher": "$msCompile",
             "options": {
-                "cwd": "${workspaceFolder}/back-azure"
+                "cwd": "${workspaceFolder}/back_azure"
             }
         },
         {
@@ -60,7 +60,7 @@
             "type": "process",
             "problemMatcher": "$msCompile",
             "options": {
-                "cwd": "${workspaceFolder}/back-azure"
+                "cwd": "${workspaceFolder}/back_azure"
             }
         },
         {
@@ -77,14 +77,14 @@
             "dependsOn": "clean release",
             "problemMatcher": "$msCompile",
             "options": {
-                "cwd": "${workspaceFolder}/back-azure"
+                "cwd": "${workspaceFolder}/back_azure"
             }
         },
         {
             "type": "func",
             "dependsOn": "build",
             "options": {
-                "cwd": "${workspaceFolder}/back-azure/bin/Debug/netcoreapp2.1"
+                "cwd": "${workspaceFolder}/back_azure/bin/Debug/netcoreapp3.1"
             },
             "command": "host start",
             "isBackground": true,
