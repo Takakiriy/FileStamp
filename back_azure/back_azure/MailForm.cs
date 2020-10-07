@@ -36,7 +36,7 @@ namespace Company.Function
             {
                 From = from,
                 ReplyTo = reply,
-                Subject = (string)requestBody.mailTitle
+                Subject = (string)requestBody.mailTitle +"("+ (string)requestBody.mailName +" "+ (string)requestBody.mailAddress +")"
             };
             msg.AddContent(send::MimeType.Text, (string)requestBody.mailContents);
             msg.AddTo(to);

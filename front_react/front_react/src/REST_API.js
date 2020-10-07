@@ -71,6 +71,19 @@ class  REST_APIClass {
       return response.data;
     })
   }
+
+  async postFromMailForm(mailTitle, mailName, mailAddress, mailContents) {
+    return this.axios.post('/api/mailform?' + this.testQueryParameter.substr(1),
+      {
+        mailTitle,
+        mailName,
+        mailAddress,
+        mailContents
+      }, this.defaultAxiosOptions)
+    .then( (response) => {
+      return response.data;
+    })
+  }
 }
 const REST_API = new REST_APIClass()
 export default REST_API;

@@ -113,7 +113,12 @@ class  Support extends React.Component {
     window.$(this.mailModal.current).modal('hide');
     window.$(this.waitingModal.current).modal('show');
 
-    await REST_API.getFileHashSignatures(this.props.fileHash)
+    await REST_API.postFromMailForm(
+      this.state.mailTitle,
+      this.state.mailName,
+      this.state.mailAddress,
+      this.state.mailContents
+    )
     .then( (result) => {
       this.alert.current.showAlert('送信しました');
     })

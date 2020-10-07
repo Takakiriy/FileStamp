@@ -7,18 +7,32 @@
 
 設定:
     - __ProjectFolder__: back_azure
-    - __FunctionAppName__: sagep-function-cs
+    - __FunctionAppName__: sagep-app-function-v004
     - __FunctionName__: HttpTriggerCShap1
 
 準備:
-    Azure のアカウントを作成します:
+    Visual Studio Code をインストールします:
+        https://code.visualstudio.com/
+        オプションはすべてデフォルト
+        必要なら、Visual Studio Code をタスクバーにピン止めします
+    Azure のアカウントを作成して、開発に使う PC で、 https://portal.azure.com/ にサインインします:
+        サインインしたら、ブラウザーを閉じます
     Azure CLI をインストールします:
-        - AzureCLI/README(-jp).md を参考に、`AzureCLI/run_install.bat` を実行します
-    VSCode の拡張機能をインストールします:
-    VSCode でこのファイルがあるフォルダーを開く:
+        https://docs.microsoft.com/ja-jp/cli/azure/install-azure-cli-windows?view=azure-cli-latest&tabs=azure-cli
+            Microsoft Installer (MSI) >> Azure CLI current version
+            azure-cli-2.12.1.msi
+    Azure Functions Core Tools をインストールします:
+        https://github.com/Azure/azure-functions-core-tools#installing
+            v3 >> Windows 64-bit
+    .NET Core SDK をインストールします:
+        https://dotnet.microsoft.com/download/dotnet-core/3.1
+            Build apps - SDK >> Windows >> Installers >> x64
+    Visual Studio Code を開きます:
+        もし Visual Studio Code が開いていたら終了します:
+        もし __Project__/bin フォルダーと __Project__/obj フォルダーがあれば削除します:
+        VSCode でこのファイルがあるフォルダーを開きます:
     拡張機能: #// 拡張機能ボタン（左）
         - Azure Tools
-        - Azure Account
         - C#
 
 ローカル プロジェクトと最初の関数を作成します（作成済み）:
@@ -48,7 +62,7 @@
     参考: https://docs.microsoft.com/ja-jp/azure/azure-functions/functions-create-first-function-vs-code?pivots=programming-language-csharp#publish-the-project-to-azure
     Azure アイコン ⇒ Functions ⇒ Deploy to Function App（↑ アイコン）:
         TargetFunctionApp: Create new Function App in Azure  #// 初回のみ
-        FunctionAppName: __FunctionAppName__  #// sagep-function-cs
+        FunctionAppName: sagep-app-function-v004  #// __FunctionAppName__
         Location: Japan East  #// 初回のみ
 
 関数をクラウドで実行します:
@@ -57,4 +71,8 @@
         Azure アイコン >> Functions ⇒ Azure Account（鍵アイコン）
             ⇒ Functions ⇒ （__FunctionName__ を右クリック） ⇒ Copy Function URL
     ブラウザーでコピーした URL を開く:
-        - 例： https://sagep-function-cs.azurewebsites.net/api/HttpTriggerCSharp1
+        - 例： https://sagep-app-function-v004.azurewebsites.net/api/HttpTriggerCSharp1
+            #template: 例： https://__FunctionAppName__.azurewebsites.net/api/HttpTriggerCSharp1
+
+（初回のみ）フロントエンドとバックエンドを認証が必要な状態にします:
+    - フロントエンドの steps.yaml を参照

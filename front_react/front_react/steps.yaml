@@ -18,7 +18,7 @@
     __ImageName__: file-stamp-front
     __Tag__: 0.0.4a
     __FrontEndAppName__: sagep-app-service-v004
-    __BackEndAppName__: sagep-function-cs
+    __BackEndAppName__: sagep-app-function-v004
     __BackEndClientID__: in GitHub/FileStamp_private/secret.yaml
 
 app-react アプリケーションをローカルで編集するには:
@@ -122,7 +122,7 @@ Azure の ACR に Docker イメージを登録する:
 （初回のみ）フロントエンドとバックエンドを認証が必要な状態にする:
 
     バックエンドを実行するのに認証が必要になるように設定し、クライアント ID を調べます:
-        - https://portal.azure.com/ >> App Service >> sagep-function-cs
+        - https://portal.azure.com/ >> App Service >> sagep-app-function-v004
             #- https://portal.azure.com/ >> App Service >> __BackEndAppName__
         - 認証/承認:
             App Service 認証: オン
@@ -130,6 +130,8 @@ Azure の ACR に Docker イメージを登録する:
             認証プロバイダー: Azure Active Directory
             管理モード: 簡易
         - OK >> 保存
+        - 設定が完了するまで待つ:
+            - 次でクライアントIDを取得できるようにするため
         - 以下のどちらかの方法で、クライアント ID (__BackEndClientID__) をメモする:
             - Azure Active Directory >> Azure AD アプリ >> クライアント ID
             - Azure Active Directory >> 管理モード=既存のADアプリを選択する >> Azure AD アプリ >>
@@ -145,13 +147,13 @@ Azure の ACR に Docker イメージを登録する:
             管理モード: 簡易
         - OK >> 保存
 
-    フロントエンドがバックエンド API を安全に（トークンを使って）呼び出せるように Azure を設定します:
+    フロントエンドがバックエンド API を安全に（トークンを使って）呼び出せるように「API のアクセス許可」を設定します:
         - https://portal.azure.com/
         - Azure Active Directory:
             - アプリの登録（左） >> すべてのアプリケーション（タブ）
             - sagep-app-service-v004 （を検索）:  #- __FrontEndAppName__ （を検索）
                 - API のアクセス許可（左）>> アクセス許可の追加 >> 所属する組織で使用している API（タブ）
-                - sagep-function-cs:  #- __BackEndAppName__:
+                - sagep-app-function-v004:  #- __BackEndAppName__:
                     user_impersonation: チェック
                     OK: 「アクセス許可の追加」を押す
         - https://resources.azure.com/
@@ -168,7 +170,14 @@ Azure の ACR に Docker イメージを登録する:
         - componentDidMount() in src/App.js
 
 （初回のみ）CORS設定:
-    Azure portal >> App Service から CORS を設定
+    - Azure portal >> App Service >> sagep-app-function-v004
+    - CORS を設定:
+        #template: Azure portal >> App Service >> __BackEndAppName__ >> CORS を設定
+        - http://localhost
+        - http://localhost:3000
+        - https://sagep-app-service-v004.azurewebsites.net
+            #// https://__FrontEndAppName__.azurewebsites.net
+        - 保存
 
 Web App for Containers での継続的デプロイ:
     参考: https://docs.microsoft.com/ja-jp/azure/app-service/deploy-ci-cd-custom-container
@@ -196,8 +205,15 @@ Web App for Containers での継続的デプロイ:
             #// 「Azure の ACR に Docker イメージを登録する」を参照
                 #// ACR の Webhook が発動したことをログから確認できます
                 #// App Service が Webhook を受け取るのは、ACR が Webhook を発動してから 15～40秒後です
+        - az acr login で下記のエラーメッセージが出たときは、az login を実行します:
+            エラーメッセージ: |
+                AADSTS50132: The session is not valid due the following reasons:
+                password expiration or recent password change, SSO Artifact is invalid or expired,
+                session is not fresh enough for application, or a silent sign-in request was sent
+                but the user's session with Azure AD is invalid or has expired.
         - （しばらくデプロイしていないときには）App Service の VM を起動します:
             - https://portal.azure.com/ >> App Service >> （アプリ名） >> 概要 >> ブラウズ
+
         - デプロイされたことをログで確認する:
             - https://portal.azure.com/ >> App Service >> （アプリ名） >> コンテナーの設定
             - 「最新の情報に更新」ボタンを押して、新しいタグがダウンロードされたことを確認します。
