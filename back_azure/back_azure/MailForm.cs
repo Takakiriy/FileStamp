@@ -23,6 +23,8 @@ namespace Company.Function
             log::ILogger log)
         {
             log.LogInformation($"C# HTTP trigger function MailForm_POST.");
+
+            await Program.CheckRequestCount();
             var  requestBodyString = await new io::StreamReader(req.Body).ReadToEndAsync();
             dynamic requestBody = json::JsonConvert.DeserializeObject(requestBodyString);
 

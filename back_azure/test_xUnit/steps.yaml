@@ -9,20 +9,25 @@
         - 参考: https://docs.microsoft.com/ja-jp/aspnet/core/fundamentals/target-aspnetcore?view=aspnetcore-3.1&tabs=visual-studio-code#support-both-hosting-models
 
 テストします:
-    - bash:
+    - 準備:
+        - Visual Studio Code を起動します
+        - "[ File >> Open Folder ] で親フォルダー（back_azure.sln ファイルがあるフォルダー）を開きます"
+        - もし、右下に [ Restore ] ボタンが表示されたら、そのボタンを押します
+        - VSCode で Azure へサインインする:
+            Visual Studio Code の Azure ボタン（左）で、Sign in to Azure
+        - アプリケーション設定を local.settings.json にダウンロードします:
+            - F1 キー: |
+                Azure Functions: Download Remote Settings
+            - sagep-app-function-v004  #template: __FunctionAppName__
+            - local.settings.json に Overwrite >> Yes
+                #// local.settings.json には API キーが含まれているので、.gitignore に local.settings.json を追加しています
+        - テスト用にアプリケーション設定を変更します:
+            - local.settings.json: |
+                "MaxRequestCountPerMinute": "100"
+    - Terminal >> New Terminal:
         - cd  "test_xUnit"
         - dotnet test
 
 デバッグします:
-    - Visual Studio Code を起動します
-    - "[ File >> Open Folder ] で親フォルダー（back_azure.sln ファイルがあるフォルダー）を開きます"
-    - もし、右下に [ Restore ] ボタンが表示されたら、そのボタンを押します
-    - VSCode で Azure へサインインする:
-        Visual Studio Code の Azure ボタン（左）で、Sign in to Azure
-    - アプリケーション設定を local.settings.json にダウンロードします:
-        - F1 キー: |
-            Azure Functions: Download Remote Settings
-        - sagep-app-function-v004  #template: __FunctionAppName__
-        - local.settings.json に Overwrite >> Yes
-            #// local.settings.json には API キーが含まれているので、.gitignore に local.settings.json を追加しています
+    - テストの準備をします（上記）
     - テストのソースファイル（例：HttpTriggerSignatures.test.cs）に付いた [ Run Test | Debug Test ] ボタンを押します

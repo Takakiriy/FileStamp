@@ -46,6 +46,32 @@
         NameSpace: Company.Function
         AccessRights: Anonymous
 
+（初回のみ）APIキーを生成して設定します:
+    - 参考: https://sendgrid.kke.co.jp/docs/Tutorials/A_Transaction_Mail/manage_api_key.html
+    - https://sendgrid.kke.co.jp/ からダッシュボードへログイン
+    - Settings（左下）>> API Keys >>
+    - Create API Key（右上）:
+        API Key Name: a
+        API Key Permissins: Full Access
+        OK: Create & View
+        #// 表示された SendGrid の API キーの値は、次の手順で記録します
+    - SendGrid の API キーの値と、送信先メールアドレスを __Project__/local.settings.json に書きます: |
+        {
+            "IsEncrypted": false,
+            "Values": {
+                "SendGrid_API_Key": "____",
+                "SendGrid_SendTo": "____"
+            }
+        }
+            #// __Project__/local.settings.json は、コミットしないように .gitignore に登録されています
+
+（2回目以降なら）アプリケーション設定を local.settings.json にダウンロードします:
+    - F1 キー: |
+        Azure Functions: Download Remote Settings
+    - sagep-app-function-v004  #template: __FunctionAppName__
+    - local.settings.json に Overwrite >> Yes
+        #// local.settings.json には API キーが含まれているので、.gitignore に local.settings.json を追加しています
+
 関数をローカルで実行します:
     - F5 キーを押します
     - 成功したら TERMINAL ビューにデバッグ実行中の Web サーバーの URL が表示されます

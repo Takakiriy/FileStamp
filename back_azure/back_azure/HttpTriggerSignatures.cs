@@ -10,15 +10,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Security.Claims;
+using http = System.Web.Http;
 
 namespace Company.Function
 {
     public static class Settings {
         public const string CosmosDBEndpointUrl = "https://sagepcosmosdb1.documents.azure.com:443/";
-        public const string CosmosDBPrimaryKey = "vPPTcPWGrmCCEkPLjhcLCU9x2nTuaYqlPdNJtFMxudkgZaW9YzL9kMlJZETrq5PSCXx3wINzlc7LxLL6zBFFIQ==";
         public const string CosmosDBDatabaseID = "StampDatabase";
-        public const string ExampleCosmosDBContainerID = "StampContainer";
         public const string CosmosDBContainerID = "Signature";
+        public const string CosmosDBRequestCounterContainerID = "RequestCounter";
     }
 
     public static class Signature
@@ -41,6 +41,8 @@ namespace Company.Function
             string method = req.Query["method"];
 
             log.LogInformation($"C# HTTP trigger function processed a request {method}.");
+
+            await Program.CheckRequestCount();
             Program.req = req;
             Program.log = log;
             Program.claimsPrincipal = claimsPrincipal;
@@ -217,6 +219,31 @@ namespace Company.Function
             return  DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
+
+        // CheckRequestCount()
+        public static async Task  CheckRequestCount() {
+
+            var  maxRequestCountPerMinute = int.Parse(Environment.GetEnvironmentVariable("MaxRequestCountPerMinute"));
+            var  db = new RequestCountDataBase();
+            await db.SetUp();
+
+            var record = await db.GetRequestCount();
+            if (record == null) {
+                record = new RequestCountRecord();
+                record.ResetAndAddNewRequest();
+
+                await db.PostRequestCount(record);
+            } else {
+                record.RemoveOldRequests();
+                if ( ! record.CanRequest(maxRequestCountPerMinute) ) {
+                    throw new http::HttpResponseException((HttpStatusCode)429);
+                }
+
+                record.AddNewRequest(maxRequestCountPerMinute);
+                await db.PutRequestCount(record);
+            }
+        }
+
         public static HttpRequest req; 
         public static ILogger log; 
         public static ClaimsPrincipal claimsPrincipal;
@@ -228,7 +255,7 @@ namespace Company.Function
         // SetUp()
         public async Task  SetUp()
         {
-            this.cosmosClient = new CosmosClient(Settings.CosmosDBEndpointUrl, Settings.CosmosDBPrimaryKey);
+            this.cosmosClient = new CosmosClient(Settings.CosmosDBEndpointUrl, Environment.GetEnvironmentVariable("CosmosDBPrimaryKey"));
             this.database = await this.cosmosClient.CreateDatabaseIfNotExistsAsync(Settings.CosmosDBDatabaseID);
             this.container = await this.database.CreateContainerIfNotExistsAsync(Settings.CosmosDBContainerID,
                 "/id");
@@ -249,7 +276,7 @@ namespace Company.Function
         {
             try {
                 // CreateItemAsync()
-                ItemResponse<FileStampData> andersenStampResponse =
+                ItemResponse<FileStampData> response =
                     await this.container.CreateItemAsync<FileStampData>(
                         data,
                         new PartitionKey( data.id )
@@ -289,7 +316,7 @@ namespace Company.Function
         {
             try {
                 // CreateItemAsync()
-                ItemResponse<FileStampData> andersenStampResponse =
+                ItemResponse<FileStampData> response =
                     await this.container.UpsertItemAsync<FileStampData>(
                         data,
                         new PartitionKey( data.id )
@@ -307,6 +334,96 @@ namespace Company.Function
         private Container container;
         public static HttpRequest req;
     }
+
+
+    public class  RequestCountDataBase
+    {
+        // SetUp()
+        public async Task  SetUp()
+        {
+            this.cosmosClient = new CosmosClient(Settings.CosmosDBEndpointUrl, Environment.GetEnvironmentVariable("CosmosDBPrimaryKey"));
+            this.database = await this.cosmosClient.CreateDatabaseIfNotExistsAsync(Settings.CosmosDBDatabaseID);
+            this.container = await this.database.CreateContainerIfNotExistsAsync(Settings.CosmosDBRequestCounterContainerID,
+                "/id");
+        }
+
+
+        // Dispose()
+        public void  Dispose()
+        {
+            if (this.cosmosClient != null) {
+                this.cosmosClient.Dispose();
+            }
+        }
+
+
+        // PostRequestCount()
+        public async Task  PostRequestCount(RequestCountRecord record)
+        {
+            try {
+                // CreateItemAsync()
+                ItemResponse<RequestCountRecord> response =
+                    await this.container.CreateItemAsync<RequestCountRecord>(
+                        record,
+                        new PartitionKey( record.id )
+                    );
+            }
+            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.Conflict)
+            {
+                Program.log.LogInformation($"CosmosException {ex}.");
+                throw ex;
+            }
+        }
+
+
+        // GetRequestCount()
+        public async Task<RequestCountRecord>  GetRequestCount()
+        {
+            var dummyIPAddress = "0.0.0.0";
+            var sqlQueryText = $"SELECT * FROM c WHERE c.id = '{dummyIPAddress}'";
+            QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText);
+
+            // record = GetItemQueryIterator(), ReadNextAsync()
+            RequestCountRecord  record = null;
+            FeedIterator<RequestCountRecord>  iterator = this.container.GetItemQueryIterator<RequestCountRecord>(queryDefinition);
+            while (iterator.HasMoreResults) {  // Iterate physical partitions
+                FeedResponse<RequestCountRecord>  records = await iterator.ReadNextAsync();
+                foreach (RequestCountRecord recordPart  in  records) {  //Iterate logical partitions
+
+                    record = recordPart;
+                    break;
+                }
+            }
+            return record;
+        }
+
+
+        // PutRequestCount()
+        public async Task  PutRequestCount(RequestCountRecord record)
+        {
+            try {
+                // CreateItemAsync()
+                ItemResponse<RequestCountRecord> response =
+                    await this.container.UpsertItemAsync<RequestCountRecord>(
+                        record,
+                        new PartitionKey( record.id )
+                    );
+            }
+            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.Conflict)
+            {
+                Program.log.LogInformation($"CosmosException {ex}.");
+                throw ex;
+            }
+        }
+
+        private CosmosClient cosmosClient;
+        private Database database;
+        private Container container;
+    }
+
+
+
+
 
     public class  FileStampArgument
     {
@@ -336,6 +453,63 @@ namespace Company.Function
             this.Signer = args.Signer;
             this.Date = args.Date;
             this.IsDeleted = false;
+        }
+    }
+
+    public class  RequestCountRecord
+    {
+        public string id { get; set; }  // IPAddress
+        public string[] Dates { get; set; }
+
+        public  RequestCountRecord()
+        {
+            this.id = "0.0.0.0";
+            this.Dates = new string[0];
+        }
+
+        public void  RemoveOldRequests()
+        {
+            var nowObject = DateTime.UtcNow;
+            var now = nowObject.ToString("yyyy/MM/dd HH:mm:ss");
+            var oldest = nowObject.AddMinutes(-1).ToString("yyyy/MM/dd HH:mm:ss");
+            var newDates = new string[this.Dates.Length];
+            var newCount = 0;
+
+            foreach (var date in this.Dates) {
+                if (date.CompareTo(oldest) >= 0) {
+                    newDates[newCount] = date;
+                    newCount += 1;
+                }
+            }
+            System.Array.Resize(ref newDates, newCount);
+
+            this.Dates = newDates;
+        }
+
+        public Boolean  CanRequest(int maxCount)
+        {
+            return  this.Dates.Length < maxCount;
+        }
+
+        public void  ResetAndAddNewRequest()
+        {
+            var now = DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm:ss");
+            this.Dates = new string[1];
+            this.Dates[0] = now;
+        }
+
+        public void  AddNewRequest(int maxCount)
+        {
+            if ( ! this.CanRequest(maxCount) ) {
+                throw  new System.InvalidOperationException( "RequestCountRecord: cannot-add" );
+            }
+            var now = DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm:ss");
+            var dates = this.Dates;
+            var newCount = this.Dates.Length + 1;
+
+            System.Array.Resize(ref dates, newCount);
+            dates[newCount - 1] = now;
+            this.Dates = dates;
         }
     }
 }

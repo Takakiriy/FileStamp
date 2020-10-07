@@ -1,5 +1,6 @@
 using System;
 using io = System.IO;
+using net = System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -9,233 +10,266 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using http = System.Web.Http;
+using System.Linq;
+using Xunit.Abstractions;
+
+namespace XUnit.Project.Orderers
+{
+    public class DisplayNameOrderer : ITestCollectionOrderer
+    {
+        public IEnumerable<ITestCollection> OrderTestCollections(
+            IEnumerable<ITestCollection> testCollections) =>
+            testCollections.OrderBy(collection => collection.DisplayName);
+    }
+}
 
 namespace Functions.Tests
 {
+    public class S // Settings
+    {
+        public const string  TaroMailAddress = "taro.suzuki@example.com";
+        public const string  JiroMailAddress = "jiro.suzuki@example.com";
+        public const string  SaburoMailAddress = "saburo.suzuki@example.com";
+        public const string  FileHashA = "aaaaaaaa4d875bcc80df5f50e0511cc73b1d7820a44f3a378a6660c9647ae69d";
+        public const string  FileHashB = "bbbbbbbb98fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    }
+
+    [Collection("01-Signature")]
     public class TestOfSignature
     {
-        private const string  taroMailAddress = "taro.suzuki@example.com";
-        private const string  jiroMailAddress = "jiro.suzuki@example.com";
-        private const string  saburoMailAddress = "saburo.suzuki@example.com";
-        private const string  fileHashA = "aaaaaaaa4d875bcc80df5f50e0511cc73b1d7820a44f3a378a6660c9647ae69d";
-        private const string  fileHashB = "bbbbbbbb98fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-
         [Fact]
         public async void TestOfPut()
         {
-            await CallHttpPutMethod(fileHashA, taroMailAddress);
+            await T.LoadApplicationSettings();
 
-            var response = await CallHttpGetMethod(fileHashA);
-            dynamic signature = SearchOneSignature(GetBody(response), taroMailAddress);
+            await T.CallHttpPutMethod(S.FileHashA, S.TaroMailAddress);
 
-            AssertEqual((string)signature.Signer, taroMailAddress);
-            MyAssertNow((string)signature.Date);
-            AssertEqual((bool)signature.IsDeleted, false);
+            var response = await T.CallHttpGetMethod(S.FileHashA);
+            dynamic signature = T.SearchOneSignature(T.GetBody(response), S.TaroMailAddress);
+
+            T.AssertEqual((string)signature.Signer, S.TaroMailAddress);
+            T.MyAssertNow((string)signature.Date);
+            T.AssertEqual((bool)signature.IsDeleted, false);
         }
 
         [Fact]
         public async void TestOfGet()
         {
-            var response = await CallHttpGetMethod(fileHashA);
-            dynamic signature = SearchOneSignature(GetBody(response), taroMailAddress);
+            await T.LoadApplicationSettings();
 
-            AssertEqual((string)signature.Signer, taroMailAddress);
+            var response = await T.CallHttpGetMethod(S.FileHashA);
+            dynamic signature = T.SearchOneSignature(T.GetBody(response), S.TaroMailAddress);
+
+            T.AssertEqual((string)signature.Signer, S.TaroMailAddress);
         }
 
         [Fact]
         public async void TestOfDelete()
         {
-            await CallHttpDeleteMethod(fileHashA, taroMailAddress);
+            await T.LoadApplicationSettings();
 
-            var response = await CallHttpGetMethod(fileHashA);
-            dynamic signature = SearchOneSignature(GetBody(response), taroMailAddress);
+            await T.CallHttpDeleteMethod(S.FileHashA, S.TaroMailAddress);
 
-            AssertEqual((string)signature.Signer, taroMailAddress);
-            MyAssertNow((string)signature.Date);
-            AssertEqual((bool)signature.IsDeleted, true);
+            var response = await T.CallHttpGetMethod(S.FileHashA);
+            dynamic signature = T.SearchOneSignature(T.GetBody(response), S.TaroMailAddress);
+
+            T.AssertEqual((string)signature.Signer, S.TaroMailAddress);
+            T.MyAssertNow((string)signature.Date);
+            T.AssertEqual((bool)signature.IsDeleted, true);
         }
 
         [Fact]
         public async void TestOfManyPutAndDelete()
         {
-            await CallHttpPutMethod(fileHashA, taroMailAddress);
+            await T.LoadApplicationSettings();
 
-            var response = await CallHttpGetMethod(fileHashA);
-            dynamic signature = SearchOneSignature(GetBody(response), taroMailAddress);
+            await T.CallHttpPutMethod(S.FileHashA, S.TaroMailAddress);
 
-            AssertEqual((string)signature.Signer, taroMailAddress);
-            MyAssertNow((string)signature.Date);
-            AssertEqual((bool)signature.IsDeleted, false);
+            var response = await T.CallHttpGetMethod(S.FileHashA);
+            dynamic signature = T.SearchOneSignature(T.GetBody(response), S.TaroMailAddress);
 
-            await CallHttpDeleteMethod(fileHashA, taroMailAddress);
+            T.AssertEqual((string)signature.Signer, S.TaroMailAddress);
+            T.MyAssertNow((string)signature.Date);
+            T.AssertEqual((bool)signature.IsDeleted, false);
 
-            response = await CallHttpGetMethod(fileHashA);
-            signature = SearchOneSignature(GetBody(response), taroMailAddress);
+            await T.CallHttpDeleteMethod(S.FileHashA, S.TaroMailAddress);
 
-            AssertEqual((string)signature.Signer, taroMailAddress);
-            MyAssertNow((string)signature.Date);
-            AssertEqual((bool)signature.IsDeleted, true);
+            response = await T.CallHttpGetMethod(S.FileHashA);
+            signature = T.SearchOneSignature(T.GetBody(response), S.TaroMailAddress);
 
-            await CallHttpPutMethod(fileHashA, taroMailAddress);
+            T.AssertEqual((string)signature.Signer, S.TaroMailAddress);
+            T.MyAssertNow((string)signature.Date);
+            T.AssertEqual((bool)signature.IsDeleted, true);
 
-            response = await CallHttpGetMethod(fileHashA);
-            signature = SearchOneSignature(GetBody(response), taroMailAddress);
+            await T.CallHttpPutMethod(S.FileHashA, S.TaroMailAddress);
 
-            AssertEqual((string)signature.Signer, taroMailAddress);
-            MyAssertNow((string)signature.Date);
-            AssertEqual((bool)signature.IsDeleted, false);
+            response = await T.CallHttpGetMethod(S.FileHashA);
+            signature = T.SearchOneSignature(T.GetBody(response), S.TaroMailAddress);
 
-            await CallHttpDeleteMethod(fileHashA, taroMailAddress);
+            T.AssertEqual((string)signature.Signer, S.TaroMailAddress);
+            T.MyAssertNow((string)signature.Date);
+            T.AssertEqual((bool)signature.IsDeleted, false);
 
-            response = await CallHttpGetMethod(fileHashA);
-            signature = SearchOneSignature(GetBody(response), taroMailAddress);
+            await T.CallHttpDeleteMethod(S.FileHashA, S.TaroMailAddress);
 
-            AssertEqual((string)signature.Signer, taroMailAddress);
-            MyAssertNow((string)signature.Date);
-            AssertEqual((bool)signature.IsDeleted, true);
+            response = await T.CallHttpGetMethod(S.FileHashA);
+            signature = T.SearchOneSignature(T.GetBody(response), S.TaroMailAddress);
+
+            T.AssertEqual((string)signature.Signer, S.TaroMailAddress);
+            T.MyAssertNow((string)signature.Date);
+            T.AssertEqual((bool)signature.IsDeleted, true);
         }
 
         [Fact]
         public async void TestOfPutFromEachUser()
         {
-            await CallHttpPutMethod(fileHashB, saburoMailAddress);
-            await CallHttpPutMethod(fileHashB, jiroMailAddress);
-            await CallHttpPutMethod(fileHashB, taroMailAddress);
+            await T.LoadApplicationSettings();
 
-            var body = GetBody(await CallHttpGetMethod(fileHashB));
+            await T.CallHttpPutMethod(S.FileHashB, S.SaburoMailAddress);
+            await T.CallHttpPutMethod(S.FileHashB, S.JiroMailAddress);
+            await T.CallHttpPutMethod(S.FileHashB, S.TaroMailAddress);
+
+            var body = T.GetBody(await T.CallHttpGetMethod(S.FileHashB));
             dynamic signature;
 
             foreach(string mailAddress in new string[] {
-                taroMailAddress, jiroMailAddress, saburoMailAddress })
+                S.TaroMailAddress, S.JiroMailAddress, S.SaburoMailAddress })
             {
-                signature = SearchOneSignature(body, mailAddress);
+                signature = T.SearchOneSignature(body, mailAddress);
 
-                AssertEqual((string)signature.Signer, mailAddress);
-                MyAssertNow((string)signature.Date);
-                AssertEqual((bool)signature.IsDeleted, false);
+                T.AssertEqual((string)signature.Signer, mailAddress);
+                T.MyAssertNow((string)signature.Date);
+                T.AssertEqual((bool)signature.IsDeleted, false);
             }
 
 
-            await CallHttpDeleteMethod(fileHashB, jiroMailAddress);
-            signature = SearchOneSignature(GetBody(await CallHttpGetMethod(fileHashB)), taroMailAddress);
-            AssertEqual((bool)signature.IsDeleted, false);
-            signature = SearchOneSignature(GetBody(await CallHttpGetMethod(fileHashB)), jiroMailAddress);
-            AssertEqual((bool)signature.IsDeleted, true);
-            signature = SearchOneSignature(GetBody(await CallHttpGetMethod(fileHashB)), saburoMailAddress);
-            AssertEqual((bool)signature.IsDeleted, false);
+            await T.CallHttpDeleteMethod(S.FileHashB, S.JiroMailAddress);
+            signature = T.SearchOneSignature(T.GetBody(await T.CallHttpGetMethod(S.FileHashB)), S.TaroMailAddress);
+            T.AssertEqual((bool)signature.IsDeleted, false);
+            signature = T.SearchOneSignature(T.GetBody(await T.CallHttpGetMethod(S.FileHashB)), S.JiroMailAddress);
+            T.AssertEqual((bool)signature.IsDeleted, true);
+            signature = T.SearchOneSignature(T.GetBody(await T.CallHttpGetMethod(S.FileHashB)), S.SaburoMailAddress);
+            T.AssertEqual((bool)signature.IsDeleted, false);
         }
 
         [Fact]
         public async void TestOfAuthenticationEmulated()
         {
             dynamic signature;
+            await T.LoadApplicationSettings();
 
             var response = (OkObjectResult)await Signature.OnHttpPost(
                 TestFactory.CreateHttpRequest(
                     new Dictionary<string, StringValues>{
                         { "method", new StringValues("put") },
                     },
-                    "{\"fileHash\": \""+ fileHashA +"\"}"
+                    "{\"fileHash\": \""+ S.FileHashA +"\"}"
                 ),
-                logger,
-                TaroPrincipal);
+                T.Logger,
+                T.TaroPrincipal);
 
             response = (OkObjectResult)await Signature.OnHttpPost(
                 TestFactory.CreateHttpRequest(
                     new Dictionary<string, StringValues>{
                         { "method", new StringValues("put") },  // 最初に delete はできないため
                     },
-                    "{\"fileHash\": \""+ fileHashA +"\"}"
+                    "{\"fileHash\": \""+ S.FileHashA +"\"}"
                 ),
-                logger,
-                JiroPrincipal);
+                T.Logger,
+                T.JiroPrincipal);
 
             response = (OkObjectResult)await Signature.OnHttpPost(
                 TestFactory.CreateHttpRequest(
                     new Dictionary<string, StringValues>{
                         { "method", new StringValues("delete") },
                     },
-                    "{\"fileHash\": \""+ fileHashA +"\"}"
+                    "{\"fileHash\": \""+ S.FileHashA +"\"}"
                 ),
-                logger,
-                JiroPrincipal);
+                T.Logger,
+                T.JiroPrincipal);
 
             response = (OkObjectResult)await Signature.OnHttpPost(
                 TestFactory.CreateHttpRequest(
                     new Dictionary<string, StringValues>{
                         { "method", new StringValues("get") },
                     },
-                    "{\"fileHash\": \""+ fileHashA +"\"}"
+                    "{\"fileHash\": \""+ S.FileHashA +"\"}"
                 ),
-                logger,
-                TaroPrincipal);
+                T.Logger,
+                T.TaroPrincipal);
 
-            signature = SearchOneSignature(GetBody(response), taroMailAddress);
-            AssertEqual((bool)signature.IsDeleted, false);
-            signature = SearchOneSignature(GetBody(response), jiroMailAddress);
-            AssertEqual((bool)signature.IsDeleted, true);
+            signature = T.SearchOneSignature(T.GetBody(response), S.TaroMailAddress);
+            T.AssertEqual((bool)signature.IsDeleted, false);
+            signature = T.SearchOneSignature(T.GetBody(response), S.JiroMailAddress);
+            T.AssertEqual((bool)signature.IsDeleted, true);
 
             response = (OkObjectResult)await Signature.OnHttpPost(
                 TestFactory.CreateHttpRequest(
                     new Dictionary<string, StringValues>{
                         { "method", new StringValues("delete") },
                     },
-                    "{\"fileHash\": \""+ fileHashA +"\"}"
+                    "{\"fileHash\": \""+ S.FileHashA +"\"}"
                 ),
-                logger,
-                TaroPrincipal);
+                T.Logger,
+                T.TaroPrincipal);
 
             response = (OkObjectResult)await Signature.OnHttpPost(
                 TestFactory.CreateHttpRequest(
                     new Dictionary<string, StringValues>{
                         { "method", new StringValues("put") },
                     },
-                    "{\"fileHash\": \""+ fileHashA +"\"}"
+                    "{\"fileHash\": \""+ S.FileHashA +"\"}"
                 ),
-                logger,
-                JiroPrincipal);
+                T.Logger,
+                T.JiroPrincipal);
 
             response = (OkObjectResult)await Signature.OnHttpPost(
                 TestFactory.CreateHttpRequest(
                     new Dictionary<string, StringValues>{
                         { "method", new StringValues("get") },
                     },
-                    "{\"fileHash\": \""+ fileHashA +"\"}"
+                    "{\"fileHash\": \""+ S.FileHashA +"\"}"
                 ),
-                logger,
-                TaroPrincipal);
+                T.Logger,
+                T.TaroPrincipal);
 
-            signature = SearchOneSignature(GetBody(response), taroMailAddress);
-            AssertEqual((bool)signature.IsDeleted, true);
-            signature = SearchOneSignature(GetBody(response), jiroMailAddress);
-            AssertEqual((bool)signature.IsDeleted, false);
+            signature = T.SearchOneSignature(T.GetBody(response), S.TaroMailAddress);
+            T.AssertEqual((bool)signature.IsDeleted, true);
+            signature = T.SearchOneSignature(T.GetBody(response), S.JiroMailAddress);
+            T.AssertEqual((bool)signature.IsDeleted, false);
         }
 
         [Fact]
         public async void TestOfBadMethod()
         {
+            await T.LoadApplicationSettings();
             var  exception = false;
             try {
                 var response = (IActionResult)await Signature.OnHttpPost(
                     TestFactory.CreateHttpRequest(
                         new Dictionary<string, StringValues>{
                             { "method", new StringValues("unknown") },
-                            { "mail", new StringValues(taroMailAddress) },
+                            { "mail", new StringValues(S.TaroMailAddress) },
                         },
-                        "{\"fileHash\": \""+ fileHashA +"\"}"
+                        "{\"fileHash\": \""+ S.FileHashA +"\"}"
                     ),
-                    logger,
-                    NotAuthenticatedUserPrincipal);
+                    T.Logger,
+                    T.NotAuthenticatedUserPrincipal);
             } catch (Exception) {
                 exception = true;
             }
-            AssertEqual(exception, true);
+            T.AssertEqual(exception, true);
         }
+    }
 
+    [Collection("02-MailForm")]
+    public class TestOfMailForm
+    {
         [Fact]
         public async void TestOfPutToMailForm()
         {
-            await LoadApplicationSettings();
+            await T.LoadApplicationSettings();
 
             var response = (OkObjectResult)await MailForm.OnHttpPost(
                 TestFactory.CreateHttpRequest(
@@ -247,11 +281,37 @@ namespace Functions.Tests
                         "\"mailContents\": \"高橋様\nお世話になっております。\"" +
                     "}"
                 ),
-                logger);
+                T.Logger);
         }
+    }
 
-        // logger
-        private static readonly ILogger logger = TestFactory.CreateLogger(LoggerTypes.List);
+    [Collection("99-RequestCount")]
+    public class TestOfRequestCount
+    {
+        [Fact]
+        public async void TestOfManyRequestCount()
+        {
+            await T.LoadApplicationSettings();
+            var  maxRequestCountPerMinute = int.Parse(Environment.GetEnvironmentVariable("MaxRequestCountPerMinute"));
+            var  exception = false;
+            try {
+
+                for (int i = 0;  i <= maxRequestCountPerMinute;  i += 1 ) {
+                    await Program.CheckRequestCount();
+                }
+            } catch (http::HttpResponseException exc) {
+                if (exc.Response.StatusCode == (net::HttpStatusCode)429) {
+                    exception = true;
+                }
+            }
+            T.AssertEqual(exception, true);
+        }
+    }
+
+    public class T  // TestTools
+    {
+        // Logger
+        public static readonly ILogger Logger = TestFactory.CreateLogger(LoggerTypes.List);
 
         // NotAuthenticatedUserPrincipal
         public static ClaimsPrincipal  NotAuthenticatedUserPrincipal
@@ -274,7 +334,7 @@ namespace Functions.Tests
                 var  identity = new ClaimsIdentity();
                 principal.AddIdentity(identity);
 
-                identity.AddClaim(new Claim( ClaimTypes.Name, taroMailAddress));
+                identity.AddClaim(new Claim( ClaimTypes.Name, S.TaroMailAddress));
                 return  principal;
             }
         }
@@ -288,7 +348,7 @@ namespace Functions.Tests
                 var  identity = new ClaimsIdentity();
                 principal.AddIdentity(identity);
 
-                identity.AddClaim(new Claim( ClaimTypes.Name, jiroMailAddress));
+                identity.AddClaim(new Claim( ClaimTypes.Name, S.JiroMailAddress));
                 return  principal;
             }
         }
@@ -300,11 +360,11 @@ namespace Functions.Tests
                 TestFactory.CreateHttpRequest(
                     new Dictionary<string, StringValues>{
                         { "method", new StringValues("get") },
-                        { "mail", new StringValues(taroMailAddress) },
+                        { "mail", new StringValues(S.TaroMailAddress) },
                     },
                     "{\"fileHash\": \""+ fileHash +"\"}"
                 ),
-                logger,
+                Logger,
                 NotAuthenticatedUserPrincipal);
             return response;
         }
@@ -320,7 +380,7 @@ namespace Functions.Tests
                     },
                     "{\"fileHash\": \""+ fileHash +"\"}"
                 ),
-                logger,
+                Logger,
                 NotAuthenticatedUserPrincipal);
             return response;
         }
@@ -336,7 +396,7 @@ namespace Functions.Tests
                     },
                     "{\"fileHash\": \""+ fileHash +"\"}"
                 ),
-                logger,
+                Logger,
                 NotAuthenticatedUserPrincipal);
             return response;
         }
