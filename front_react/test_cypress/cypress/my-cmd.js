@@ -184,6 +184,7 @@ export function  waitForAnimation( getParameter ) {
 			}
 			old = new_;
 		}
+		cy.wait(100);
 	})
 }
 
@@ -207,6 +208,7 @@ export function  clickButton(manual, buttonLabel, target) {
 
 // clickCloseModalButton
 // Example: cmd.clickCloseModalButton("  - ～のモーダルを閉じます。",  '[data-test="close-button"]')
+// cmd.waitForAnimation が必要な場合もあります。
 export function  clickCloseModalButton(manual, getParameter) {
 	writeToManual( manual )
 	cy.get(getParameter).should('be.visible')

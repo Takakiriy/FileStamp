@@ -20,7 +20,7 @@ class  REST_APIClass {
     const front_end_base = window.location.protocol +"//"+ window.location.hostname;
     if (MyContextValue.isTestMode) {
       this.testQueryParameter = "&mail=" + MyContextValue.userMailAddress;
-      return;
+      return Promise.resolve( [{user_id: MyContextValue.userMailAddress}] );
     }
 
     return this.axios.get(front_end_base + '/.auth/me')

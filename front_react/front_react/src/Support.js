@@ -1,5 +1,6 @@
 ﻿import React from "react";
 import './App.css';
+import { MyContextValue } from './MyContext';
 import AnimationAlert from './AnimationAlert';
 import REST_API from './REST_API';
 
@@ -16,23 +17,24 @@ class  Support extends React.Component {
         <form ref={this.mailForm} noValidate>
           <div className="form-group">
             <label htmlFor="title1">タイトル</label>
-            <input type="text" className="form-control" id="title1" placeholder="タイトルを入力"
+            <input type="text" className="form-control" id="title1" placeholder="タイトルを入力" data-test="mail-title"
               value={this.state.mailTitle} onChange={(e) => this.setState({mailTitle: e.target.value})}/>
           </div>
           <div className="form-group">
             <label htmlFor="name1">お名前</label>
-            <input type="text" className="form-control" id="name1" placeholder="貴方のお名前を入力"
+            <input type="text" className="form-control" id="name1" placeholder="貴方のお名前を入力" data-test="mail-name"
               value={this.state.mailName} onChange={(e) => this.setState({mailName: e.target.value})}/>
           </div>
           <div className="form-group">
             <label htmlFor="email1">返信を受け取るメールアドレス</label>
-            <input type="email" className={this.getMailAdddressClass()} id="email1" aria-describedby="emailHelp" placeholder="貴方のメールアドレスを入力"
+            <input type="email" className={this.getMailAdddressClass()} id="email1" data-test="mail-address"
+              aria-describedby="emailHelp" placeholder="貴方のメールアドレスを入力"
               value={this.state.mailAddress} onInput={(e) => this.setState({mailAddress: e.target.value})} onChange={()=>{}}/>
             <div className={this.getMailAdddressFeedbackClass()}>メールアドレスの書式が正しくありません</div>
           </div>
           <div className="form-group">
             <label htmlFor="textarea1">内容</label>
-            <textarea className="form-control" id="textarea1" rows="7" placeholder="ご質問の内容を入力"
+            <textarea className="form-control" id="textarea1" rows="7" placeholder="ご質問の内容を入力" data-test="mail-contents"
               value={this.state.mailContents} onChange={(e) => this.setState({mailContents: e.target.value})}/>
           </div>
           <AnimationAlert ref={this.alert}/>
@@ -46,7 +48,7 @@ class  Support extends React.Component {
               <div className="modal-header">
                 <h5 className="modal-title" id="mail-modal-title">送信内容の確認</h5>
                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true" data-test="close-user-info">&times;</span>
+                <span aria-hidden="true" data-test="close-mail-modal">&times;</span>
                 </button>
               </div>
               <div className="modal-body container">
@@ -90,15 +92,19 @@ class  Support extends React.Component {
   constructor() {
     super();
     this.state = {
-      mailTitle: "質問",
-      mailName: "鈴木",
-      mailAddress: "a@example.com",
-      mailContents: "内容\nです",
+      mailTitle: "",
+      mailName: "",
+      mailAddress: "",
+      mailContents: "",
     };
     this.mailForm = React.createRef();
     this.mailModal = React.createRef();
     this.waitingModal = React.createRef();
     this.alert = React.createRef();
+  }
+
+  loadDefaultValues() {
+    this.setState({mailAddress: MyContextValue.userMailAddress});
   }
 
   handleConfirmMailButton(event) {
@@ -140,7 +146,11 @@ class  Support extends React.Component {
   }
 
   isEnabedConfirm() {
-    return this.state.mailAddress && this.isValidMailAddress(this.state.mailAddress);
+    return (
+      this.state.mailAddress &&
+      this.isValidMailAddress(this.state.mailAddress) &&
+      this.state.mailContents !== ''
+    );
   }
   getMailAdddressClass() {
     return "form-control" + this.getValidatedInputClassName(this.isValidMailAddress(this.state.mailAddress));

@@ -29,11 +29,10 @@ class  App extends React.Component {
             </h3>
             <small> version 0.11（開発中）</small>
           </div>
-          <UserSetting
-            mailAddress={this.state.userMailAddress}/>
+          <UserSetting mailAddress={this.state.userMailAddress}/>
         </div>
         <Manual/>
-        <Support/>
+        <Support ref={this.support}/>
       </MyContext.Provider>
     );
 /*
@@ -54,20 +53,22 @@ class  App extends React.Component {
       testMessage: "",
       isTestMode: isExampleComUser || window.location.hostname === 'localhost',
     };
+    this.support = React.createRef();
     MyContextValue.isTestMode = this.state.isTestMode;
     MyContextValue.userMailAddress = this.state.userMailAddress;
   }
 
   componentDidMount() {
     REST_API.getToken()
-    .then( (data) => {
-      const authenticatedMailAddress = data[0].user_id;
-      this.setState({userMailAddress: authenticatedMailAddress});
-      MyContextValue.userMailAddress = authenticatedMailAddress;
-    })
-    .catch( (err) => {
-      this.setState({testMessage: String(err)});
-    });
+      .then( (data) => {
+        const authenticatedMailAddress = data[0].user_id;
+        this.setState({userMailAddress: authenticatedMailAddress});
+        MyContextValue.userMailAddress = authenticatedMailAddress;
+        this.support.current.loadDefaultValues();
+      })
+      .catch( (err) => {
+        this.setState({testMessage: String(err)});
+      });
   }
 
   async handleTestAPI() {
