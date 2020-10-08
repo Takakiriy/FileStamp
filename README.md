@@ -241,6 +241,7 @@ Visual Studio のエクステンションで Azure Functions にデプロイし�
   - [App Service へデプロイする手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_AppService/steps.yaml)
   - [Azure Functions とそのデプロイの手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_Azure_functions_cs/steps.yaml)
   - [Jenkins + Azure AKS の手順メモ](https://github.com/Takakiriy/azure-voting-app-redis/blob/master/steps.yaml)
+  - [Azure Functions から SendGrid を使ってメールを送る手順メモ](https://github.com/Takakiriy/Trials/blob/master/try_AzureFunctions_SendGrid/steps.yaml)
 
 手順メモはチュートリアルに書かれていない情報を補足します。
 また、チェックリストとしても使える一覧性のある資料です。
